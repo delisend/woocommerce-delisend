@@ -1,0 +1,37 @@
+{
+    "name": "delisend/woocommerce-delisend",
+    "description": "Delisend Woocommerce Rest APi client",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "delisend",
+        "wordpress",
+        "api"
+    ],
+    "homepage": "https://delisend.com/",
+    "authors": [{
+        "name": "Rosi Group s.r.o.",
+        "email": "contact@rosigroup.com"
+    }],
+    "autoload": {
+        "classmap": [
+            "src"
+        ]
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:delisend/delisend-php-api.git"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.0",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.0",
+        "delisens/delisend-php-api": "^1.0"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
+    }
+}
