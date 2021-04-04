@@ -20,4 +20,4 @@ if (!defined('ABSPATH')) { exit; }
 require_once(__DIR__ . '/vendor/autoload.php');
 
 // plugins loaded callback
-Delisend\WC\DelisendWPLoader::instance();
+Delisend\WC\WC_Delisend_Loader::instance();

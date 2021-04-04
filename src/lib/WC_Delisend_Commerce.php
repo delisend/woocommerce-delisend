@@ -3,10 +3,10 @@
 namespace Delisend\WC\Lib;
 
 /**
- * Class DellisendCommerce
+ * Class WC_Delisend_Commerce
  * @package Delisend\WC\Lib
  */
-class DelisendWPCommerce
+class WC_Delisend_Commerce
 {
 
 }

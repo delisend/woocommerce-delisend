@@ -18,18 +18,11 @@
             "src"
         ]
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url":  "git@github.com:delisend/delisend-php-api.git"
-        }
-    ],
     "require": {
         "php": ">=5.6.0",
         "ext-curl": "*",
         "ext-json": "*",
-        "guzzlehttp/guzzle": "^7.0",
-        "delisens/delisend-php-api": "^1.0"
+        "guzzlehttp/guzzle": "^7.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest"

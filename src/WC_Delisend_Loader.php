@@ -2,13 +2,13 @@
 
 namespace Delisend\WC;
 
-use Delisend\WC\Lib\DelisendWPPlugin;
+use Delisend\WC\Lib\WC_Delisend_Plugin;
 
 /**
- * Class Delisend
+ * Class WC_Delisend_Loader
  * @package Delisend\WC
  */
-final class DelisendWPLoader extends DelisendWPPlugin
+final class WC_Delisend_Loader extends WC_Delisend_Plugin
 {
     /**
      * Minimum PHP version required by this plugin
@@ -31,7 +31,7 @@ final class DelisendWPLoader extends DelisendWPPlugin
     const PLUGIN_NAME = 'Delisend for WooCommerce';
 
     /**
-     * @var DelisendWPLoader
+     * @var WC_Delisend_Loader
      */
     private static $instance;
 
@@ -82,7 +82,7 @@ final class DelisendWPLoader extends DelisendWPPlugin
      * Gets the main \Delisend instance.
      * Ensures only one instance can be loaded.
      *
-     * @return DelisendWPLoader
+     * @return _WC_Delisend_Loader
      */
     public static function instance() {
 

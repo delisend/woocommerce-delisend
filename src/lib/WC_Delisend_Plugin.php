@@ -3,10 +3,10 @@
 namespace Delisend\WC\Lib;
 
 /**
- * Class DelisendSetings
+ * Class WC_Delisend_Plugin
  * @package Delisend\WC\Lib
  */
-class DelisendWPSettings
+class WC_Delisend_Plugin
 {
 
 }
