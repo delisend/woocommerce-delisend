@@ -9,10 +9,16 @@
         "api"
     ],
     "homepage": "https://delisend.com/",
-    "authors": [{
-        "name": "Rosi Group s.r.o.",
-        "email": "contact@rosigroup.com"
-    }],
+    "authors": [
+        {
+            "name": "Rosi Group s.r.o.",
+            "email": "contact@rosigroup.com"
+        },
+        {
+            "name": "Delisend",
+            "email": "contact@delisend.com"
+        }
+    ],
     "autoload": {
         "classmap": [
             "src"
