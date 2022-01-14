@@ -2,91 +2,52 @@
 
 namespace Delisend\WC;
 
+if (!defined('ABSPATH')) {exit; }
+
+use Delisend\WC\Lib\WC_Delisend_Definitions;
+use Delisend\WC\Lib\WC_Delisend_Install;
 use Delisend\WC\Lib\WC_Delisend_Plugin;
+use Delisend\WC\Lib\WC_Delisend_Utils;
+
+
+if ( ! class_exists( 'WC_Delisend_Loader' ) ) :
 
 /**
  * Class WC_Delisend_Loader
  * @package Delisend\WC
  */
-final class WC_Delisend_Loader extends WC_Delisend_Plugin
-{
-    /**
-     * Minimum PHP version required by this plugin
-     */
-    const MINIMUM_PHP_VERSION = '7.2.0';
+final class WC_Delisend_Loader {
+
+    /** @var WC_Delisend_Loader */
+    protected static $instance;
+
+    /** @var WC_Delisend_Plugin */
+    protected static $delisend;
 
     /**
-     * Minimum WordPress version required by this plugin
-     */
-    const MINIMUM_WP_VERSION = '5.6';
-
-    /**
-     * Minimum WooCommerce version required by this plugin
-     */
-    const MINIMUM_WC_VERSION = '3.5.0';
-
-    /**
-     * The plugin name, for displaying notices
-     */
-    const PLUGIN_NAME = 'Delisend for WooCommerce';
-
-    /**
-     * @var WC_Delisend_Loader
-     */
-    private static $instance;
-
-    /**
-     * @var array the admin notices to add
-     */
-    private $notices = array();
-
-    /**
-     * Delisend constructor.
-     */
-    public function __construct()
-    {
-        register_activation_hook( __FILE__, array( $this, 'activation_check' ) );
-
-        add_action( 'admin_init', array( $this, 'check_environment' ) );
-        add_action( 'admin_init', array( $this, 'add_plugin_notices' ) );
-
-        add_action( 'admin_notices', array( $this, 'admin_notices' ), 15 );
-
-        // if the environment check fails, initialize the plugin
-        if ( $this->is_environment_compatible() ) {
-            add_action('plugins_loaded', array( $this, 'init_plugin' ), 15);
-        }
-    }
-
-    /**
-     * Initializes the plugin.
+     * WC_Delisend_Loader constructor.
      *
-     * @since 1.0.0
+     * @return void
      */
-    public function init_plugin() {
-        if ( !$this->plugins_compatible() ) {
-            return;
-        }
+    public function __construct() {
+        register_activation_hook(__FILE__, array($this, 'activation_check'));
+        register_activation_hook(__FILE__, array($this, 'install'));
+        register_deactivation_hook(__FILE__, array($this, 'uninstall'));
 
-        $this->load_framework();
+        add_action('plugins_loaded', array($this, 'delisend_testing'), 1);
 
-        /*require_once( plugin_dir_path( __FILE__ ) . 'class-wc-facebookcommerce.php' );
+        $this->delisend = new WC_Delisend_Plugin();
 
-        // fire it up!
-        if ( function_exists( 'facebook_for_woocommerce' ) ) {
-            facebook_for_woocommerce();
-        }*/
     }
 
     /**
      * Gets the main \Delisend instance.
      * Ensures only one instance can be loaded.
      *
-     * @return _WC_Delisend_Loader
+     * @return WC_Delisend_Loader
      */
     public static function instance() {
-
-        if ( null === self::$instance ) {
+        if (null === self::$instance) {
             self::$instance = new self();
         }
 
@@ -94,21 +55,40 @@ final class WC_Delisend_Loader extends WC_Delisend_Plugin
     }
 
     /**
+     * Checks the server environment and other factors and deactivates plugins as necessary.
      *
+     * @return void
      */
-    public function activation_check()
-    {
-        echo 'kurna je to nainstalovane';
+    public function activation_check() {
+        if (!WC_Delisend_Utils::is_environment_compatible()) {
+            $this->deactivate_plugin();
+            wp_die( WC_Delisend_Definitions::PLUGIN_NAME . ' could not be activated. ' . $this->get_environment_message() );
+        }
     }
 
-    public function check_environment()
-    {
-        if ( ! $this->is_environment_compatible() && is_plugin_active( plugin_basename( __FILE__ ) ) ) {
+    /**
+     * When active plugin function will be call
+     *
+     * @return bool
+     */
+    public function install(): bool {
+        global $wp_version;
 
-            $this->deactivate_plugin();
-
-            $this->add_admin_notice( 'bad_environment', 'error', self::PLUGIN_NAME . ' has been deactivated. ' . $this->get_environment_message() );
+        // kontrola verzie wordpressu
+        if (version_compare($wp_version, WC_Delisend_Definitions::MINIMUM_WP_VERSION, "<")) {
+            deactivate_plugins(basename(__FILE__)); // Deactivate our plugin
+            wp_die("This plugin requires WordPress version " . WC_Delisend_Definitions::MINIMUM_WP_VERSION . " or higher.");
         }
+
+        return true;
+    }
+
+    /**
+     * When deactive function will be call
+     */
+    public function uninstall()
+    {
+
     }
 
     /**
@@ -118,14 +98,129 @@ final class WC_Delisend_Loader extends WC_Delisend_Plugin
      */
     public function admin_notices()
     {
-
-        foreach ( (array) $this->notices as $notice_key => $notice ) {
-
+        foreach ((array)$this->notices as $notice_key => $notice) {
             ?>
-            <div class="<?php echo esc_attr( $notice['class'] ); ?>">
-                <p><?php echo wp_kses( $notice['message'], array( 'a' => array( 'href' => array() ) ) ); ?></p>
+            <div class="<?php echo esc_attr($notice['class']); ?>">
+                <p><?php echo wp_kses($notice['message'], array('a' => array('href' => array()))); ?></p>
             </div>
             <?php
+        }
+    }
+
+
+    /**
+    * Returns true if the identified notice hasn't been cleared, or we're on
+    * the plugin settings page (where notices are always displayed)
+    *
+    * @param string $message_id the message id
+    * @param array $params Optional parameters.
+    *
+    * @type bool $dismissible             If the notice should be dismissible
+    * @type bool $always_show_on_settings If the notice should be forced to display on the
+    *                                     plugin settings page, regardless of `$dismissible`.
+    *
+    * @return bool
+    */
+    public function should_display_notice( $message_id, $params = array() ) {
+
+        // bail out if user is not a shop manager
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            return false;
+        }
+
+        $params = wp_parse_args( $params, array (
+            'dismissible'             => true,
+            'always_show_on_settings' => true,
+        ) );
+
+        // if the notice is always shown on the settings page, and we're on the settings page
+        if ( $params['always_show_on_settings'] && $this->is_plugin_settings()) {
+            return true;
+        }
+
+        // non-dismissible, always display
+        if ( ! $params['dismissible'] ) {
+            return true;
+        }
+
+        // dismissible: display if notice has not been dismissed
+        return ! $this->is_notice_dismissed( $message_id );
+    }
+
+
+    /**
+     * Returns true if the identified admin notice has been dismissed for the given user
+     *
+     * @param string $message_id the message identifier
+     * @param int $user_id optional user identifier, defaults to current user
+     * @return boolean true if the message has been dismissed by the admin user
+     */
+    public function is_notice_dismissed( $message_id, $user_id = null ): bool {
+
+        $dismissed_notices = $this->get_dismissed_notices(  $message_id, $user_id );
+
+        return isset( $dismissed_notices[ $message_id ] ) && $dismissed_notices[ $message_id ];
+    }
+
+    /**
+     * Returns the full set of dismissed notices for the user identified by $user_id, for this plugin
+     *
+     * @param int $user_id optional user identifier, defaults to current user
+     * @param string $message_id the message identifier
+     * @return array of message id to dismissed status (true or false)
+     */
+    public function get_dismissed_notices( $message_id, $user_id = null  ): array {
+
+        if ( is_null( $user_id ) ) {
+            $user_id = get_current_user_id();
+        }
+
+        $dismissed_notices = get_user_meta( $user_id, '_wc_plugin_framework_' . $message_id . '_dismissed_messages', true );
+
+        if ( empty( $dismissed_notices ) ) {
+            return array();
+        }
+
+        return $dismissed_notices;
+    }
+
+    /**
+     *
+     */
+    public function woocommerce_loaded() {
+        if (!$this->running_setup && current_user_can('manage_woocommerce')) {
+            if (is_admin()) {
+
+            }
+        }
+    }
+
+    /**
+     * Determines if viewing the plugin settings in the admin.
+     *
+     * @return bool
+     */
+    public function is_plugin_settings() {
+        return is_admin() && \Delisend\WC\Lib\WC_Delisend_Settings::PAGE_ID === \Delisend\WC\Lib\WC_Delisend_Helper::get_requested_value( 'page' );
+    }
+
+    /**
+     * Methot for internal testing
+     */
+    public function delisend_testing () {
+        $install = WC_Delisend_Install::instance();
+    }
+
+    /**
+     * Deactivates the plugin.
+     *
+     * @internal
+     */
+    protected function deactivate_plugin(): void {
+        deactivate_plugins(plugin_basename(__FILE__));
+
+        if (isset($_GET['activate'])) {
+            unset($_GET['activate']);
         }
     }
 
@@ -135,129 +230,26 @@ final class WC_Delisend_Loader extends WC_Delisend_Plugin
      * @param string $slug the slug for the notice
      * @param string $class the css class for the notice
      * @param string $message the notice message
-     */
-    private function add_admin_notice( $slug, $class, $message )
-    {
-
-        $this->notices[ $slug ] = array(
-            'class'   => $class,
-            'message' => $message
-        );
-    }
-
-    /**
-     * Deactivates the plugin.
      *
      * @internal
      */
-    protected function deactivate_plugin()
-    {
-
-        deactivate_plugins( plugin_basename( __FILE__ ) );
-
-        if ( isset( $_GET['activate'] ) ) {
-            unset( $_GET['activate'] );
-        }
+    private function add_admin_notice( $slug, $class, $message, $dismissible = false ) {
+        $this->notices[$slug] = [
+            'class'       => $class,
+            'message'     => $message,
+            'dismissible' => $dismissible,
+        ];
     }
 
     /**
      * Gets the message for display when the environment is incompatible with this plugin.
      *
-     * @since 1.10.0
-     *
      * @return string
      */
-    private function get_environment_message() {
-
-        return sprintf( 'The minimum PHP version required for this plugin is %1$s. You are running %2$s.', self::MINIMUM_PHP_VERSION, PHP_VERSION );
-    }
-
-    /**
-     * Determines if the required plugins are compatible.
-     *
-     * @since 1.10.0
-     *
-     * @return bool
-     */
-    private function plugins_compatible()
-    {
-        return $this->is_wp_compatible() && $this->is_wc_compatible();
-    }
-
-    /**
-     * Determines if the WooCommerce compatible.
-     *
-     * @since 1.10.0
-     *
-     * @return bool
-     */
-    private function is_wc_compatible()
-    {
-
-        if ( ! self::MINIMUM_WC_VERSION ) {
-            return true;
-        }
-
-        return defined( 'WC_VERSION' ) && version_compare( WC_VERSION, self::MINIMUM_WC_VERSION, '>=' );
-    }
-
-    /**
-     * Determines if the server environment is compatible with this plugin.
-     * Override this method to add checks for more than just the PHP version.
-     *
-     * @return bool
-     */
-    private function is_environment_compatible()
-    {
-        return version_compare( PHP_VERSION, self::MINIMUM_PHP_VERSION, '>=' );
-    }
-
-    /**
-     * Loads the base framework classes.
-     *
-     * @since 1.0.0
-     */
-    private function load_framework()
-    {
-
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function add_plugin_notices()
-    {
-        if ( ! $this->is_wp_compatible() ) {
-
-        }
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function install () : string
-    {
-        global $wp_version;
-
-        if ( version_compare( $wp_version, self::MINIMUM_WP_VERSION, "<" ) ) {
-            return "Tvoj Wordpress je velmi starucky";
-        }
-
-        return false;
-    }
-
-    /**
-     * Determines if the WordPress compatible.
-     * @since 1.0.0
-     * @return bool
-     */
-    private function is_wp_compatible(): bool
-    {
-        if ( ! self::MINIMUM_WP_VERSION ) {
-            return true;
-        }
-
-        return version_compare( get_bloginfo( 'version' ), self::MINIMUM_WP_VERSION, '>=' );
+    private function get_environment_message(): string {
+        return sprintf('The minimum PHP version required for this plugin is %1$s. You are running %2$s.', WC_Delisend_Definitions::MINIMUM_PHP_VERSION, PHP_VERSION);
     }
 
 }
+
+endif;
