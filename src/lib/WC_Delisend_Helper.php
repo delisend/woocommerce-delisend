@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) { exit; }
  */
 class WC_Delisend_Helper {
 
+
     /**
      * Safely gets a value from $_POST.
      * If the expected data is a string also trims it.
@@ -28,6 +29,7 @@ class WC_Delisend_Helper {
 
         return $value;
     }
+
 
     /**
      * Safely gets a value from $_REQUEST.
@@ -48,6 +50,7 @@ class WC_Delisend_Helper {
         return $value;
     }
 
+
     /**
      * Get the count of notices added, either for all notices (default) or for one
      * particular notice type specified by $notice_type.
@@ -65,6 +68,7 @@ class WC_Delisend_Helper {
         return 0;
     }
 
+
     /**
      * Add and store a notice.
      * WC notice functions are not available in the admin
@@ -79,6 +83,7 @@ class WC_Delisend_Helper {
         }
     }
 
+
     /**
      * Print a single notice immediately
      * WC notice functions are not available in the admin
@@ -92,6 +97,7 @@ class WC_Delisend_Helper {
             wc_print_notice( $message, $notice_type );
         }
     }
+
 
     /**
      * Determines if the current request is for a WC REST API endpoint.
@@ -115,6 +121,7 @@ class WC_Delisend_Helper {
         /* applies WooCommerce core filter */
         return (bool) apply_filters( 'woocommerce_is_rest_api_request', $is_rest_api_request );
     }
+
 
     /**
      * Gets the Delisend for WooCommerce plugin instance.
