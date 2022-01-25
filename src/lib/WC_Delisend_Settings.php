@@ -45,6 +45,7 @@ if (!class_exists('WC_Delisend_Settings')) :
          */
         public $use_woo_nav = false;
 
+
         /**
          * Settings constructor.
          */
@@ -57,6 +58,7 @@ if (!class_exists('WC_Delisend_Settings')) :
             add_action('admin_menu', array($this, 'add_menu_item'));
             add_action('wp_loaded', array($this, 'save'));
         }
+
 
         /**
          * Adds the Delisend menu item.
@@ -78,6 +80,7 @@ if (!class_exists('WC_Delisend_Settings')) :
 
             $this->register_woo_nav_menu_items();
         }
+
 
         /**
          * Renders wrapper for the settings page.
@@ -135,6 +138,7 @@ if (!class_exists('WC_Delisend_Settings')) :
             <?php
         }
 
+
         /**
          * Saves the settings page.
          *
@@ -176,6 +180,7 @@ if (!class_exists('WC_Delisend_Settings')) :
             }
         }
 
+
         /**
          * Gets a settings screen object based on ID.
          *
@@ -189,6 +194,7 @@ if (!class_exists('WC_Delisend_Settings')) :
 
             return !empty($screens[$screen_id]) && $screens[$screen_id] instanceof Abstract_Settings_Screen ? $screens[$screen_id] : null;
         }
+
 
         /**
          * Gets the available screens.
@@ -216,6 +222,7 @@ if (!class_exists('WC_Delisend_Settings')) :
             return $screens;
         }
 
+
         /**
          * Gets the tabs.
          *
@@ -238,6 +245,7 @@ if (!class_exists('WC_Delisend_Settings')) :
             return (array)apply_filters('wc_delisend_admin_settings_tabs', $tabs, $this);
         }
 
+
         /**
          * Returns the title for the settings page.
          *
@@ -248,6 +256,7 @@ if (!class_exists('WC_Delisend_Settings')) :
             return __('Delisend - Settings', WC_Delisend_Definitions::TEXT_DOMAIN) .
                 sprintf('&nbsp;(v. %s)', WC_Delisend_Definitions::PLUGIN_VERSION);
         }
+
 
         /**
          * Returns the description for the settings page.
@@ -260,6 +269,7 @@ if (!class_exists('WC_Delisend_Settings')) :
             return __('In this page you can configure the settings for the Delisend plugin.',
                 WC_Delisend_Definitions::TEXT_DOMAIN);
         }
+
 
         /**
          * Register nav items for new Woo nav.

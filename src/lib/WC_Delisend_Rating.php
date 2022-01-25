@@ -18,12 +18,14 @@ class WC_Delisend_Rating
     /** @var WC_Delisend_Rating singleton instance */
     protected static $instance;
 
+
     /**
      * WC_Delisend_Rating constructor.
      */
     public function __construct() {
 
     }
+
 
     /**
      * Gets the plugin singleton instance.
@@ -38,6 +40,7 @@ class WC_Delisend_Rating
 
         return self::$instance;
     }
+
 
     /**
      * @param $uid

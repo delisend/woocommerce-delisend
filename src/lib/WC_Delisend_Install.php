@@ -15,12 +15,14 @@ class WC_Delisend_Install {
     /** @var WC_Delisend_Install singleton instance */
     protected static $instance;
 
+
     /**
      * WC_Delisend_Install constructor.
      */
     public function __construct() {
         $this->install();
     }
+
 
     /**
      * Gets the plugin singleton instance.
@@ -35,6 +37,7 @@ class WC_Delisend_Install {
 
         return self::$instance;
     }
+
 
     /**
      * Create the queue tables in the DB so we can use it for syncing.
@@ -66,6 +69,7 @@ class WC_Delisend_Install {
 
         return true;
     }
+
 
     /**
      * Create database table and base plugin options
