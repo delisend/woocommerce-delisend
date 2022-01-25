@@ -49,6 +49,7 @@ class WC_Delisend_Message {
         add_filter( 'wp_redirect', array( $this, 'redirect' ), 1, 2 );
     }
 
+
     /**
      * Persist messages
      *
@@ -76,6 +77,7 @@ class WC_Delisend_Message {
         return false;
     }
 
+
     /**
      * Loads messages
      *
@@ -96,6 +98,7 @@ class WC_Delisend_Message {
         }
     }
 
+
     /**
      * Clear messages and errors
      *
@@ -114,6 +117,7 @@ class WC_Delisend_Message {
         $this->errors[] = $error;
     }
 
+
     /**
      * Adds a warning message.
      *
@@ -122,6 +126,7 @@ class WC_Delisend_Message {
     public function add_warning( $message ) {
         $this->warnings[] = $message;
     }
+
 
     /**
      * Adds a info message.
@@ -132,6 +137,7 @@ class WC_Delisend_Message {
         $this->infos[] = $message;
     }
 
+
     /**
      * Add a message.
      *
@@ -140,6 +146,7 @@ class WC_Delisend_Message {
     public function add_message( $message ) {
         $this->messages[] = $message;
     }
+
 
     /**
      * Get error count.
@@ -150,6 +157,7 @@ class WC_Delisend_Message {
         return count( $this->errors );
     }
 
+
     /**
      * Gets the warning message count.
      *
@@ -158,6 +166,7 @@ class WC_Delisend_Message {
     public function warning_count() {
         return count( $this->warnings );
     }
+
 
     /**
      * Gets the info message count.
@@ -168,6 +177,7 @@ class WC_Delisend_Message {
         return count( $this->infos );
     }
 
+
     /**
      * Get message count.
      *
@@ -177,6 +187,7 @@ class WC_Delisend_Message {
         return count( $this->messages );
     }
 
+
     /**
      * Get error messages
      *
@@ -185,6 +196,7 @@ class WC_Delisend_Message {
     public function get_errors() {
         return $this->errors;
     }
+
 
     /**
      * Get an error message
@@ -196,6 +208,7 @@ class WC_Delisend_Message {
         return isset( $this->errors[ $index ] ) ? $this->errors[ $index ] : '';
     }
 
+
     /**
      * Gets all warning messages.
      *
@@ -204,6 +217,7 @@ class WC_Delisend_Message {
     public function get_warnings() {
         return $this->warnings;
     }
+
 
     /**
      * Gets a specific warning message.
@@ -215,6 +229,7 @@ class WC_Delisend_Message {
         return isset( $this->warnings[ $index ] ) ? $this->warnings[ $index ] : '';
     }
 
+
     /**
      * Gets all info messages.
      *
@@ -223,6 +238,7 @@ class WC_Delisend_Message {
     public function get_infos() {
         return $this->infos;
     }
+
 
     /**
      * Gets a specific info message.
@@ -234,6 +250,7 @@ class WC_Delisend_Message {
         return isset( $this->infos[ $index ] ) ? $this->infos[ $index ] : '';
     }
 
+
     /**
      * Get messages
      *
@@ -242,6 +259,7 @@ class WC_Delisend_Message {
     public function get_messages() {
         return $this->messages;
     }
+
 
     /**
      * Get a message
@@ -253,6 +271,7 @@ class WC_Delisend_Message {
     public function get_message( $index ) {
         return isset( $this->messages[ $index ] ) ? $this->messages[ $index ] : '';
     }
+
 
     /**
      * Render the errors and messages.
@@ -305,6 +324,7 @@ class WC_Delisend_Message {
         echo wp_kses_post( $output );
     }
 
+
     /**
      * Redirection hook which persists messages into session data.
      *
@@ -321,6 +341,7 @@ class WC_Delisend_Message {
 
         return $location;
     }
+
 
     /**
      * Generate a unique id to identify the messages
