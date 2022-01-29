@@ -1,19 +1,32 @@
 <?php
 
 use Delisend\WC\Lib\WC_Delisend_Definitions;
+use Delisend\WC\Lib\WC_Delisend_Helper;
 
 if (!defined('ABSPATH')) { exit; }
 
 
 $text_domain = WC_Delisend_Definitions::TEXT_DOMAIN;
-$order_data = wc_get_order( $order_id );
-
+$order = wc_get_order( $order_id );
 if (!empty($order_vat_data) && !empty($order_vat_data['taxes'])) {
 	if ($order_vat_data['invoice_currency'] == $order_vat_data['vat_currency']) {
 		$invoice_currency_column_css = 'hidden';
 	}
 	$order_vat_totals = $order_vat_data['totals'];
 }
+
+dump($order->get_shipping_methods());
+dump($order);
+
+$data = [
+    "customer_ip" =>  "customer_ip_address",
+    "customer_user_agent" => "customer_user_agent",
+];
+
+dump($data);
+
+//dump(WC_Delisend_Helper::wc_delisend()->is_automatic_check_enabled());
+
 ?>
 <div id="woocommerce_delisend_order_info_box">
 	<div id="delisend_info">
