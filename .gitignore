@@ -19,7 +19,11 @@ build/*
 .DS_Store
 
 # If the vendor directory isn't being commited the composer.lock file should also be ignored
+composer.json
 composer.lock
 
 # Ignore private auth setting files
 auth.json
+
+package.json
+package-lock.json
