@@ -52,6 +52,18 @@ class WC_Delisend_Helper {
 
 
     /**
+     * Parses the string into variables
+     * @param string $post_data posted data string
+     * @return array
+     */
+    public static function get_requested_post_data($post_data) {
+        $args = array();
+        parse_str( $post_data, $args );
+        return $args;
+    }
+
+
+    /**
      * Get the count of notices added, either for all notices (default) or for one
      * particular notice type specified by $notice_type.
      * WC notice functions are not available in the admin
