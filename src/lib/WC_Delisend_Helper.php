@@ -59,6 +59,17 @@ class WC_Delisend_Helper {
     public static function get_requested_post_data($post_data) {
         $args = array();
         parse_str( $post_data, $args );
+
+        // Good idea to make sure things are set before using them
+        $args = isset( $args ) ? (array) $args : array();
+
+        // Any of the WordPress data sanitization functions can be used here
+        $shipping_method = array_map( 'esc_attr', $args['shipping_method'] );
+
+        // Any of the WordPress data sanitization functions can be used here
+        $args = array_map( 'esc_attr', $args );
+        $args['shipping_method'] = $shipping_method;
+
         return $args;
     }
 

@@ -43,24 +43,51 @@ class WC_Delisend_Rating
 
 
     /**
-     * @param $uid
+     * @param int $order_id
      * @return array|bool|null|object|void
      */
-    protected function getCart($uid) {
+    public function getRating(int $order_id) {
 
         if (!$this->validated_cart_db) return false;
 
         global $wpdb;
 
         $table = "{$wpdb->prefix}delisend_rating_history";
-        $statement = "SELECT * FROM $table WHERE id = %s";
-        $sql = $wpdb->prepare($statement, $uid);
+        $statement = "SELECT * FROM $table WHERE id = %d";
+        $sql = $wpdb->prepare($statement, $order_id);
 
-        if (($saved_cart = $wpdb->get_row($sql)) && !empty($saved_cart)) {
-            return $saved_cart;
+        if (($rating = $wpdb->get_row($sql)) && !empty($rating)) {
+            return $rating;
         }
 
         return false;
+    }
+
+    /**
+     * Push a job onto the queue.
+     *
+     * @param array $rating
+     * @param int $delay
+     *
+     * @return $this
+     */
+    public function pushRating(array $rating, int $delay = 0)
+    {
+        global $wpdb;
+
+        $data = array(
+            'data'          => maybe_serialize($rating),
+            'available_at' => $this->datetime($delay),
+            'created_at'   => $this->datetime(),
+        );
+
+        if (!$wpdb->insert($this->table, $data) && $this->create_tables_if_required()) {
+            if (!$wpdb->insert($this->table, $data)) {
+
+            }
+        }
+
+        return $this;
     }
 }
 

@@ -5,49 +5,35 @@ use Delisend\WC\Lib\WC_Delisend_Helper;
 
 if (!defined('ABSPATH')) { exit; }
 
-
 $text_domain = WC_Delisend_Definitions::TEXT_DOMAIN;
 $order = wc_get_order( $order_id );
-if (!empty($order_vat_data) && !empty($order_vat_data['taxes'])) {
-	if ($order_vat_data['invoice_currency'] == $order_vat_data['vat_currency']) {
-		$invoice_currency_column_css = 'hidden';
-	}
-	$order_vat_totals = $order_vat_data['totals'];
-}
 
-dump($order->get_shipping_methods());
-dump($order);
+//dump($order->get_shipping_methods());
+//dump($order);
 
 $data = [
     "customer_ip" =>  "customer_ip_address",
     "customer_user_agent" => "customer_user_agent",
 ];
 
-dump($data);
-
+//dump($data);
 //dump(WC_Delisend_Helper::wc_delisend()->is_automatic_check_enabled());
 
 ?>
 <div id="woocommerce_delisend_order_info_box">
 	<div id="delisend_info">
 
-        <div class="delisend_rating">
-            <h4 class="title"><?php echo __('Totals by VAT rate', $text_domain); ?></h4>
+        <?php if (empty($customer_rating) ) : ?>
 
-            <div id="chart-container"></div>
-
-            <button type="button" id="" class="button button-primary">Overiť zákazíka</button>
-            <button type="button" id="" class="button button-link-delete">Nahlásiť zakazníka</button>
-            <div><?php
-
-                ?></div>
-        </div>
-
-		<?php if(empty($order_vat_totals) || (get_value('total', $order_vat_totals, 0) == 0)) : ?>
-			<div id="no_delisend_message">
+            <div id="no_delisend_message" class="rank-wrapper3">
                 <?php echo __('The risk of returning the goods with this order was not identified.', $text_domain); ?>
             </div>
-		<?php else: ?>
+
+            <?php //print_r($order->get_address()) ?>
+            <div class="delisend-rating-btn-group">
+                <button type="button" id="delisend-check-customer" class="button button-primary" data-order_id="<?php echo $order->get_id(); ?>">Overiť zákazníka</button>
+                <button type="button" id="delisend-add-rating" class="button button-link-delete" data-order_id="<?php echo $order->get_id(); ?>">Hodnotiť zákazníka</button>
+            </div>
 
 		<?php endif; ?>
 	</div>

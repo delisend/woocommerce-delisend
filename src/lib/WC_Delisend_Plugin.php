@@ -4,7 +4,6 @@ namespace Delisend\WC\Lib;
 
 if (!defined('ABSPATH')) { exit; }
 
-
 use \ReflectionClass;
 use \Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WP_Admin_Message_Handler;
@@ -191,6 +190,9 @@ class WC_Delisend_Plugin {
      */
     protected function set_hooks(): void {
 
+
+        add_action( 'init', array($this, 'plugin_load_textdomain') );
+
         // load admin handlers, before admin_init
         if (is_admin()) {
             if (WC_Delisend_Utils::is_environment_compatible()) {
@@ -202,6 +204,7 @@ class WC_Delisend_Plugin {
             }
 
             add_action('plugins_loaded', array($this, 'init_plugin'), 15);
+            remove_action( 'shutdown', 'wp_ob_end_flush_all', 1 );
 
             // UI
             add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
@@ -219,13 +222,17 @@ class WC_Delisend_Plugin {
                 add_action('plugins_loaded', array($this, 'plugins_loaded'));
                 add_action('woocommerce_init', array($this, 'woocommerce_loaded'), 1);
 
-                add_filter( 'woocommerce_my_account_my_orders_actions', array( $this, 'delisend_my_orders_actions' ), 10, 2 );
-                add_action( 'woocommerce_order_status_changed' , array( $this, 'delisend_status_changed' ), 10 , 3 );
-                add_action( 'woocommerce_order_details_after_order_table',array($this, 'delisend_details_after_order_table'));
-                add_action( 'woocommerce_order_partially_refunded',array($this, 'delisend_order_partially_refunded'));
-
+                //add_action( 'woocommerce_order_status_changed', array( $this, 'delisend_status_changed' ), 10 , 3 );
+                //add_action( 'woocommerce_order_details_after_order_table', array($this, 'delisend_details_after_order_table'), 20, 2);
+                add_action('wp_ajax_delisend_check_customer_rating', array($this, 'delisend_check_customer_rating'));
             }
         }
+
+        add_filter( 'woocommerce_package_rates', array( $this, 'delisend_woocommerce_available_shipping_methods' ), 10, 2 );
+        add_filter( 'woocommerce_available_payment_gateways', array($this, 'delisend_woocommerce_available_payment_gateways'), 10, 1);
+        add_action( 'woocommerce_before_checkout_form', array( $this, 'delisend_woocommerce_before_checkout_form' ), 10, 1 );
+        add_action( 'woocommerce_checkout_before_customer_details', array($this, 'delisend_display_payment_request_button_html'), 10, 1 );
+        add_action( 'woocommerce_checkout_update_order_review', array($this, 'delisend_woocommerce_checkout_update_order_review'), 10, 1 ); //$_POST['post_data'] )
     }
 
 
@@ -326,6 +333,18 @@ class WC_Delisend_Plugin {
      */
     public function url($key): string {
         return $this->urls[$key] ?? '';
+    }
+
+
+    /**
+     * @return void
+     */
+    function plugin_load_textdomain() {
+        $locale = determine_locale();
+        $locale = apply_filters( 'plugin_locale', $locale, WC_Delisend_Definitions::TEXT_DOMAIN );
+
+        load_textdomain( WC_Delisend_Definitions::TEXT_DOMAIN, WP_LANG_DIR . '/plugins/woocommerce-delisend-' . $locale . '.mo' );
+        load_plugin_textdomain( WC_Delisend_Definitions::TEXT_DOMAIN, false, basename( dirname( __FILE__,3 ) ) . '/languages/' );
     }
 
 
@@ -540,6 +559,48 @@ class WC_Delisend_Plugin {
 
 
     /**
+     * Determines whether debug mode is enabled.
+     *
+     * @since 1.0.0
+     *
+     * @return bool
+     */
+    public function is_debug_mode_enabled() {
+
+        /**
+         * Filters whether debug mode is enabled.
+         *
+         * @since 1.0.0
+         *
+         * @param bool $is_enabled whether debug mode is enabled
+         * @param WC_Delisend_Plugin $integration the integration instance
+         */
+        return (bool) apply_filters( 'wc_delisend_enable_debug_mode', 'yes' === get_option( WC_Delisend_Definitions::OPTION_ENABLE_DEBUG_MODE ), $this );
+    }
+
+
+    /**
+     * Determines Automatic check is enabled.
+     *
+     * @since 1.0.0
+     *
+     * @return bool
+     */
+    public function is_automatic_check_enabled() {
+
+        /**
+         * Filters whether debug mode is enabled.
+         *
+         * @since 1.0.0
+         *
+         * @param bool $is_enabled whether debug mode is enabled
+         * @param WC_Delisend_Plugin $integration the integration instance
+         */
+        return (bool) apply_filters( 'wc_delisend_enable_automatic_check', 'yes' === get_option( WC_Delisend_Definitions::OPTION_ENABLE_AUTOMATIC_CHECK ), $this );
+    }
+
+
+    /**
      * Determines if the required plugins are compatible.
      *
      * @return bool
@@ -585,16 +646,132 @@ class WC_Delisend_Plugin {
      * @internal
      */
     public function enqueue_assets() {
-        wp_enqueue_style( WC_Delisend_Definitions::PLUGIN_SLUG, WC_Delisend_Utils::get_plugin_url() . '/assets/css/delisend-style.css', array(), WC_Delisend_Definitions::PLUGIN_VERSION );
 
-        wp_register_script(WC_Delisend_Definitions::PLUGIN_SLUG . '-admin-lib', WC_Delisend_Utils::get_plugin_url() . '/assets/js/admin/delisend-lib.js', array('jquery'), WC_Delisend_Definitions::PLUGIN_VERSION, true);
-        wp_register_script(WC_Delisend_Definitions::PLUGIN_SLUG . '-admin-common', WC_Delisend_Utils::get_plugin_url() . '/assets/js/admin/delisend-admin.js', array('jquery'), WC_Delisend_Definitions::PLUGIN_VERSION, true);
+        $admin_scripts_params = array(
+            'ajax_action' => $this->ajax_action(),
+            'ajax_url' => admin_url('admin-ajax.php', 'relative'),
+            'home_url' => home_url(),
+            'wp_nonce' => wp_create_nonce($this->ajax_nonce_id()),
+        );
+
+        wp_enqueue_style( WC_Delisend_Definitions::PLUGIN_SLUG, WC_Delisend_Utils::get_plugin_url() . '/assets/css/delisend-style.css', array(), WC_Delisend_Definitions::PLUGIN_VERSION );
+        wp_enqueue_style( 'select2-css', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), '4.1.0-rc.0');
+        wp_enqueue_style( 'confirm-css', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css', array(), '4.1.0-rc.0');
+
+        wp_enqueue_script( 'select2-js', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', 'jquery', '4.1.0-rc.0');
+        wp_enqueue_script( 'confirm-js', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js', 'jquery', '4.1.0-rc.0');
+
         wp_enqueue_script(WC_Delisend_Definitions::PLUGIN_SLUG . '-admin-lib');
         wp_enqueue_script(WC_Delisend_Definitions::PLUGIN_SLUG . '-admin-common');
 
+        wp_register_script(WC_Delisend_Definitions::PLUGIN_SLUG . '-admin-lib', WC_Delisend_Utils::get_plugin_url() . '/assets/js/admin/delisend-lib.js', array('jquery'), WC_Delisend_Definitions::PLUGIN_VERSION, true);
+        wp_register_script(WC_Delisend_Definitions::PLUGIN_SLUG . '-admin-common', WC_Delisend_Utils::get_plugin_url() . '/assets/js/admin/delisend-admin.js', array('jquery'), WC_Delisend_Definitions::PLUGIN_VERSION, true);
+
+        wp_localize_script(WC_Delisend_Definitions::PLUGIN_SLUG . '-admin-common',
+            'delisend_admin_common',
+            $admin_scripts_params);
+
         do_action('wc_delisend_load_admin_scripts');
 
-        //$this->localize_admin_scripts();
+    }
+
+
+    /*public function delisend_status_changed( $order_id , $old_order_status = '' , $new_order_status = '') {
+
+    }*/
+
+
+    /*public function delisend_details_after_order_table($order) {
+
+    }*/
+
+
+    /**
+     * http://wordpress.devel/cart/
+     * @param $available_gateways
+     * @return mixed
+     */
+    public function delisend_woocommerce_available_payment_gateways( $available_gateways ) {
+
+        $billing_first_name = WC()->customer->get_billing_first_name();
+        $customer_data      = WC()->session->get('customer');
+        $billing_first_name = $customer_data['first_name'];
+
+        if (  is_checkout() ) {
+            unset($available_gateways['cod']);
+        }
+
+        return $available_gateways;
+
+    }
+
+    /**
+     * Vola sa pri ajaxovom requeste (pridat tovar do kosika)
+     *
+     * /?wc-ajax=update_order_review
+     * /?wc-ajax=add_to_cart
+     *
+     * @param $available_methods
+     * @param $package
+     * @return mixed
+     */
+    public function delisend_woocommerce_available_shipping_methods($available_methods, $package)
+    {
+        // it is only updated after changing the data for Billing data on the checkout page
+        if ( is_checkout() ) {
+
+            if ( get_option( WC_Delisend_Definitions::OPTION_ENABLE_ON_CHECKOUT_PAGE ) === 'yes' || get_option( WC_Delisend_Definitions::OPTION_ENABLE_AUTOMATIC_CHECK ) === 'yes' ) {
+
+                $data = WC_Delisend_Helper::get_requested_post_data($_REQUEST['post_data']);
+
+                $api =  WC_Delisend_Api::getInstance();
+                $rating = $api->get_delisend_rating_by_shipping($data);
+
+                // @TODO Pridat settings pre hazard_rate
+                if ($rating->results->hazard_rate >= 80) {
+                    $disable_method = get_option( WC_Delisend_Definitions::OPTION_SHIPPING_FILTER );
+                    if (!empty($disable_method)) {
+                        foreach ($disable_method as $shipping_id) {
+                            unset($available_methods['flat_rate:'.$shipping_id]);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $available_methods;
+
+    }
+
+
+    /**
+     * Vola sa pri ajaxovom requeste (pridat tovar do kosika)
+
+     * @param $rates
+     * @param $package
+     * @return array|void
+     */
+    function available_shipping_methods( $rates, $package = null )
+    {
+        if ( ! isset( WC()->cart ) || WC()->cart->is_empty() ) {
+            //return $rates;
+        }
+        //return $rates;
+    }
+
+    public function delisend_woocommerce_checkout_update_order_review($data)
+    {
+        //dump($data);
+        return $data;
+    }
+
+    /**
+     * @param $available_gateways
+     * @return mixed
+     */
+    public function delisend_woocommerce_before_checkout_form( $available_gateways )
+    {
+        return $available_gateways;
     }
 
 
@@ -603,7 +780,7 @@ class WC_Delisend_Plugin {
      *
      *  @return void
      */
-    protected function localize_admin_scripts() {
+    public function localize_admin_scripts($hook_suffix) {
         // Prepare parameters for common admin scripts
         $admin_scripts_params = array(
             'ajax_action' => $this->ajax_action(),
@@ -617,6 +794,27 @@ class WC_Delisend_Plugin {
         wp_localize_script(WC_Delisend_Definitions::PLUGIN_SLUG . '-admin-common',
             'wc_delisend_admin_params',
             $admin_scripts_params);
+    }
+
+
+    /**
+     * Ajax callback in administration, on order details
+     * @return void
+     * @throws Exception
+     */
+    public function delisend_check_customer_rating() {
+
+        if ( !isset( $_POST['order_id'] )) {
+            wp_die( 0 );
+        }
+
+        $order_id = (int) $_POST['order_id'];
+        $api = WC_Delisend_Api::getInstance();
+        $rating = $api->get_delisend_rating($order_id);
+
+        echo json_encode($rating);
+
+        wp_die();
     }
 
 

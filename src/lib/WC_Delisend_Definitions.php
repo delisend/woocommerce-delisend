@@ -41,7 +41,7 @@ class WC_Delisend_Definitions {
     const MINIMUM_WC_VERSION = '3.5.0';
 
     /** @var string The plugin text domain */
-    const TEXT_DOMAIN = 'wc-delisend';
+    const TEXT_DOMAIN = 'woocommerce-delisend';
 
     /** @var string The action used to route ajax calls to this plugin. */
     const AJAX_ACTION = 'wc-delisend-plugin';
@@ -75,9 +75,9 @@ class WC_Delisend_Definitions {
     const ERR_COULD_NOT_VALIDATE_VAT_NUMBER = 5002;
 
     // URLs
-    const URL_CONTACT_FORM = 'https://rosigroup.com/contact';
+    const URL_CONTACT_FORM = 'https://delisend.com/en/contact';
     const URL_GITLAB_REPOSITORY = 'https://github.com/delisend/woocomerce-delisend/';
-    const URL_PUBLIC_SUPPORT_FORUM = 'https://wordpress.org/support/plugin/woocomerce-delisend/';
+    const URL_PUBLIC_SUPPORT_FORUM = ''; //https://wordpress.org/support/plugin/woocomerce-delisend/';
 
     // Plugin options
 
@@ -86,6 +86,9 @@ class WC_Delisend_Definitions {
 
     /** @var string enable delisend service option name */
     const OPTION_STATUS = 'wc_delisend_status';
+
+    /** @var string  */
+    const OPTION_ENVIRONMENT = 'wc_delisend_environment';
 
     /** @var string the system user access token option name */
     const OPTION_TRACKING_ID = 'wc_delisend_tracking_id';
@@ -96,8 +99,14 @@ class WC_Delisend_Definitions {
     /** @var string automatic check when opening an order option name */
     const OPTION_ENABLE_AUTOMATIC_CHECK = 'wc_delisend_enable_automatic_check';
 
+    /** @var string automatic check on checkout page */
+    const OPTION_ENABLE_ON_CHECKOUT_PAGE = 'wc_delisend_enable_on_checkout_page';
+
     /** @var string the system user access token option name */
     const OPTION_ENABLE_DEBUG_MODE = 'wc_delisend_enable_debug_mode';
+
+    /** @var string list of prohibited shipping method */
+    const OPTION_SHIPPING_FILTER = 'wc_delisend_shipping_filter';
 
     /** @var string check after for purchase status */
     const OPTION_DELISEND_ORDER_STATUS = 'wc-processing';

@@ -2,13 +2,12 @@
 
 namespace Delisend\WC\Lib\Screens;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) { exit; }
 
 use Delisend\WC\Lib\WC_Delisend_Definitions;
 use Delisend\WC\Lib\WC_Delisend_Connection;
 use Delisend\WC\Lib\WC_Delisend_Helper;
+use Delisend\WC\Lib\WC_Delisend_Shipping;
 use Delisend\WC\Lib\WC_Delisend_Utils;
 
 if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
@@ -43,7 +42,10 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
 
 
         /**
-         * @return array|void
+         * Gets the settings data
+         *
+         * @return array
+         * @throws \Exception
          */
         public function get_settings()
         {
@@ -61,6 +63,37 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
                     'desc' => __('Enable checking orders', WC_Delisend_Definitions::TEXT_DOMAIN),
                     'label' => __('Enable Delisend plugin', WC_Delisend_Definitions::TEXT_DOMAIN),
                     'default' => 'yes'
+                ),
+
+                array(
+                    'id' => WC_Delisend_Definitions::OPTION_ENABLE_AUTOMATIC_CHECK,
+                    'title' => __('Enable Automatic check', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    'type' => 'checkbox',
+                    'desc' => __('Enable automatic check when opening an order', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    'desc_tip' => true,
+                    'default' => 'no',
+                ),
+
+                array(
+                    'id' => WC_Delisend_Definitions::OPTION_ENABLE_ON_CHECKOUT_PAGE,
+                    'title' => __('Enable check on checkout page', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    'type' => 'checkbox',
+                    'desc' => __('Enable automatic check on checkout page. ATTENTION! Automatic check must also be active.', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    'desc_tip' => true,
+                    'default' => 'no',
+                ),
+
+                array(
+                    'id' => WC_Delisend_Definitions::OPTION_ENVIRONMENT,
+                    'title' => __('Environment', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    'att_name' => 'menu_style',
+                    'type' => 'select',
+                    'options' => array(
+                        'test' =>  __('Testing', WC_Delisend_Definitions::TEXT_DOMAIN),
+                        'prod' =>  __('Production', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    ),
+                    'tooltip' => '',
+                    'default' =>  'prod'
                 ),
 
                 array(
@@ -83,12 +116,14 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
                 ),
 
                 array(
-                    'id' => WC_Delisend_Definitions::OPTION_ENABLE_AUTOMATIC_CHECK,
-                    'title' => __('Enable Automatic check', WC_Delisend_Definitions::TEXT_DOMAIN),
-                    'type' => 'checkbox',
-                    'desc' => __('Enable automatic check when opening an order', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    'id' => WC_Delisend_Definitions::OPTION_SHIPPING_FILTER,
+                    'title' => __('Disable shipping method', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    'type' => 'multiselect',
+                    'desc' => __('Disable shipping method', WC_Delisend_Definitions::TEXT_DOMAIN),
                     'desc_tip' => true,
-                    'default' => 'no',
+                    'class' => '',
+                    'default' => '',
+                    'options' => WC_Delisend_Shipping::get_shipping_methods(),
                 ),
 
                 array(
@@ -115,7 +150,6 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
          */
         public function add_notices()
         {
-
             // display a notice if the connection has previously failed
             if (get_transient('wc_delisend_connection_failed')) {
 
@@ -159,18 +193,30 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
 
             <?php WC_Delisend_Helper::wc_delisend()->get_message_handler()->show_messages(); ?>
 
-            <form class="wc-delisend-settings" method="post" id="mainform" action="" enctype="multipart/form-data">
+            <div class="delisend-settings-section">
+                <form class="wc-delisend-settings" method="post" id="mainform" action="" enctype="multipart/form-data">
 
-                <?php if ($this->is_connected) : ?>
-                <?php // @TODO Moze sa pouzit ak sa nebude token pridavat napevno do nastaveni, ale plugin sa bude do Delisendu prihlasovat cez meno / heslo ?>
-                <?php endif; ?>
+                    <?php if ($this->is_connected) : ?>
+                    <?php // @TODO Moze sa pouzit ak sa nebude token pridavat napevno do nastaveni, ale plugin sa bude do Delisendu prihlasovat cez meno / heslo ?>
+                    <?php endif; ?>
 
-                <?php woocommerce_admin_fields($settings); ?>
-                <input type="hidden" name="screen_id" value="<?php echo esc_attr($this->get_id()); ?>">
-                <?php wp_nonce_field('wc_delisend_admin_save_' . $this->get_id() . '_settings'); ?>
-                <?php submit_button(__('Save changes', 'wc-delisend'), 'primary', 'save_' . $this->get_id() . '_settings'); ?>
+                    <?php woocommerce_admin_fields($settings); ?>
+                    <input type="hidden" name="screen_id" value="<?php echo esc_attr($this->get_id()); ?>">
+                    <?php wp_nonce_field('wc_delisend_admin_save_' . $this->get_id() . '_settings'); ?>
+                    <?php submit_button(__('Save changes', 'wc-delisend'), 'primary', 'save_' . $this->get_id() . '_settings'); ?>
 
-            </form>
+                </form>
+            </div>
+
+            <div class="delisend-sidebar-section">
+                <div class="delisend_discount_voucher">
+                    <span class="delisend_discount_title">EXCLUSIVE OFFER</span>
+                    <span class="delisend-upgrade">Upgrade To Pro Plan &amp; Get</span>
+                    <strong class="delisend-OFF">30% OFF</strong>
+                    <span class="delisend-with-code">User Coupon Code: <strong>NEWDELI30</strong></span>
+                    <a class="delisend-upgrade" href="https://delisend.com/#pricing" target="_blank">Upgrade To Pro Plan</a>
+                </div>
+            </div>
 
             <?php
 

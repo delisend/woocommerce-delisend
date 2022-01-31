@@ -2,7 +2,7 @@
 
 namespace Delisend\WC;
 
-if (!defined('ABSPATH')) {exit; }
+if (!defined('ABSPATH')) { exit; }
 
 use Delisend\WC\Lib\WC_Delisend_Definitions;
 use Delisend\WC\Lib\WC_Delisend_Install;
@@ -19,10 +19,10 @@ if ( ! class_exists( 'WC_Delisend_Loader' ) ) :
 final class WC_Delisend_Loader {
 
     /** @var WC_Delisend_Loader */
-    protected static $instance;
+    private static $instance;
 
     /** @var WC_Delisend_Plugin */
-    protected static $delisend;
+    public $delisend;
 
     /**
      * WC_Delisend_Loader constructor.
@@ -37,8 +37,8 @@ final class WC_Delisend_Loader {
         add_action('plugins_loaded', array($this, 'delisend_testing'), 1);
 
         $this->delisend = new WC_Delisend_Plugin();
-
     }
+
 
     /**
      * Gets the main \Delisend instance.
@@ -54,6 +54,7 @@ final class WC_Delisend_Loader {
         return self::$instance;
     }
 
+
     /**
      * Checks the server environment and other factors and deactivates plugins as necessary.
      *
@@ -65,6 +66,7 @@ final class WC_Delisend_Loader {
             wp_die( WC_Delisend_Definitions::PLUGIN_NAME . ' could not be activated. ' . $this->get_environment_message() );
         }
     }
+
 
     /**
      * When active plugin function will be call
@@ -83,13 +85,15 @@ final class WC_Delisend_Loader {
         return true;
     }
 
+
     /**
-     * When deactive function will be call
+     * When deactivate function will be call
      */
     public function uninstall()
     {
 
     }
+
 
     /**
      * Displays any admin notices added with \Delisend::add_admin_notice()
@@ -162,6 +166,7 @@ final class WC_Delisend_Loader {
         return isset( $dismissed_notices[ $message_id ] ) && $dismissed_notices[ $message_id ];
     }
 
+
     /**
      * Returns the full set of dismissed notices for the user identified by $user_id, for this plugin
      *
@@ -184,6 +189,7 @@ final class WC_Delisend_Loader {
         return $dismissed_notices;
     }
 
+
     /**
      *
      */
@@ -195,6 +201,7 @@ final class WC_Delisend_Loader {
         }
     }
 
+
     /**
      * Determines if viewing the plugin settings in the admin.
      *
@@ -204,12 +211,14 @@ final class WC_Delisend_Loader {
         return is_admin() && \Delisend\WC\Lib\WC_Delisend_Settings::PAGE_ID === \Delisend\WC\Lib\WC_Delisend_Helper::get_requested_value( 'page' );
     }
 
+
     /**
-     * Methot for internal testing
+     * Method for internal testing
      */
     public function delisend_testing () {
         $install = WC_Delisend_Install::instance();
     }
+
 
     /**
      * Deactivates the plugin.
@@ -223,6 +232,7 @@ final class WC_Delisend_Loader {
             unset($_GET['activate']);
         }
     }
+
 
     /**
      * Adds an admin notice to be displayed.
@@ -240,6 +250,7 @@ final class WC_Delisend_Loader {
             'dismissible' => $dismissible,
         ];
     }
+
 
     /**
      * Gets the message for display when the environment is incompatible with this plugin.

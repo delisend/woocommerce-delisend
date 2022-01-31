@@ -16,6 +16,8 @@ Requires PHP: 7.0
 
 if (!defined('ABSPATH')) { exit; }
 
+require_once(__DIR__ . '/includes/functions.php');
+
 // Load Composer autoloader
 require_once(__DIR__ . '/vendor/autoload.php');
 

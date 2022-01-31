@@ -2,9 +2,7 @@
 
 namespace Delisend\WC\Lib;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) { exit; }
 
 use Automattic\WooCommerce\Admin\Features\Navigation\Menu as WooAdminMenu;
 use Delisend\WC\Lib\Screens\Abstract_Settings_Screen;
