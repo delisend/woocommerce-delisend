@@ -216,7 +216,7 @@ final class WC_Delisend_Loader {
      * Method for internal testing
      */
     public function delisend_testing () {
-        $install = WC_Delisend_Install::instance();
+        WC_Delisend_Install::instance();
     }
 
 

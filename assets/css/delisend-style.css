@@ -1,152 +1,163 @@
+
+.jconfirm .jc-bs3-container.container {
+    max-width: 768px;
+    margin: auto;
+}
+
+.jconfirm .jconfirm-box,
+.jconfirm.jconfirm-light .jconfirm-box {
+    border: 1px solid #c3c4c7;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    border-radius: 0;
+}
+
 .delisend-settings {
-  float: left;
-  width: 99%;
+    float: left;
+    width: 99%;
 }
 
 .delisend-rating-btn-group {
-  margin: 10px 0;
+    margin: 10px 0;
 }
 
 .css-delisend-styled-help {
-  color: #757575;
-  font-size: 12px;
-  font-style: normal;
+    color: #757575;
+    font-size: 12px;
+    font-style: normal;
 }
 
 .delisend-settings-section {
-  float: left;
-  width: 80%;
+    float: left;
+    width: 80%;
 }
 
 #no_delisend_message {
-  color: #fff !important;
-  box-sizing: border-box;
-  padding: 5px;
+    color: #fff !important;
+    box-sizing: border-box;
+    padding: 5px;
 }
 
 #no_delisend_message.rank-wrapper1 {
-  background: #23b54f;
+    background: #23b54f;
 }
 
 #no_delisend_message.rank-wrapper2 {
-  background: #4d9981;
+    background: #4d9981;
 }
 
 #no_delisend_message.rank-wrapper3 {
-  background: rgba(24, 153, 255, 0.75);
+    background: rgba(24, 153, 255, 0.75);
 }
 
 #no_delisend_message.rank-wrapper4 {
-  background: #e6523e;
+    background: #e6523e;
 }
 
 #no_delisend_message.rank-wrapper5 {
-  background: #af1c6b;
+    background: #af1c6b;
 }
 
 .delisend-sidebar-section {
-  box-sizing: border-box;
-  display: inline-block;
-  margin-left: 1%;
-  width: 19%;
+    box-sizing: border-box;
+    display: inline-block;
+    margin-left: 1%;
+    width: 19%;
 }
 
 .delisend_discount_voucher {
-  background: #0642B3;
-  color: #fff;
-  margin-bottom: 10px;
-  padding: 10px 10px 30px;
-  text-align: center;
+    background: #0642B3;
+    color: #fff;
+    margin-bottom: 10px;
+    padding: 10px 10px 30px;
+    text-align: center;
 }
 
 .delisend_discount_voucher span {
-  display: block;
-  padding: 10px;
-  text-align: center;
-  text-transform: uppercase;
+    display: block;
+    padding: 10px;
+    text-align: center;
+    text-transform: uppercase;
 }
 
 .delisend_discount_voucher span.delisend_discount_title {
-  display: inline-block;
-  font-weight: 700;
-  font-size: 17px;
-  margin-bottom: 5px;
-  padding-bottom: 0;
+    display: inline-block;
+    font-weight: 700;
+    font-size: 17px;
+    margin-bottom: 5px;
+    padding-bottom: 0;
 }
 
 span.delisend-upgrade {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 strong.delisend-OFF {
-  border: 3px dotted #fff;
-  display: block;
-  font-size: 44px;
-  font-weight: 700;
-  line-height: 44px;
-  margin: 20px;
-  padding: 20px 0 25px;
-  position: relative;
-  text-align: center;
+    border: 3px dotted #fff;
+    display: block;
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 44px;
+    margin: 20px;
+    padding: 20px 0 25px;
+    position: relative;
+    text-align: center;
 }
 
 strong.delisend-OFF:before {
-  background: url(../images/scissor_left.png) no-repeat;
-  content: "";
-  height: 50px;
-  left: -10px;
-  position: absolute;
-  top: -18px;
-  width: 60px;
+    background: url(../images/271220-left.png) no-repeat;
+    content: "";
+    height: 50px;
+    left: -10px;
+    position: absolute;
+    top: -18px;
+    width: 60px;
 }
 
 strong.delisend-OFF:after {
-  background: url(../images/scissor_right.png) no-repeat;
-  bottom: -33px;
-  content: "";
-  height: 50px;
-  position: absolute;
-  right: -20px;
-  width: 60px;
+    background: url(../images/32213-right.png) no-repeat;
+    bottom: -33px;
+    content: "";
+    height: 50px;
+    position: absolute;
+    right: -20px;
+    width: 60px;
 }
 
 span.delisend-with-code {
-  display: inline-block;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 0 0 15px 0;
-  line-height: 24px;
-  margin-bottom: 12px;
-  vertical-align: middle;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 0 0 15px 0;
+    line-height: 24px;
+    margin-bottom: 12px;
+    vertical-align: middle;
 }
 
 span.delisend-with-code strong {
-  color: #87c852;
-  display: inline-block;
-  font-size: 21px;
-  font-weight: 700;
-  line-height: 22px;
-  margin-top: -15px;
-  padding-left: 10px;
-  vertical-align: -webkit-baseline-middle;
+    color: #87c852;
+    display: inline-block;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 22px;
+    margin-top: -15px;
+    padding-left: 10px;
+    vertical-align: -webkit-baseline-middle;
 }
 
 a.delisend-upgrade {
-  background: #87c852;
-  border-radius: 5px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 1.2px;
-  margin: 6px 0 15px;
-  padding: 10px 20px;
-  text-transform: uppercase;
-  transition: 0.7s all;
+    background: #87c852;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    margin: 6px 0 15px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    transition: 0.7s all;
 }
 
 a.delisend-upgrade:hover {
-  background: #87c852;
-  transform: scale(1.1);
+    background: #87c852;
+    transform: scale(1.1);
 }
-
-/*# sourceMappingURL=delisend-style.css.map */

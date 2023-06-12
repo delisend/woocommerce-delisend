@@ -8,15 +8,12 @@ class ComposerStaticInit9e04d3c136ecb470ee085343daf86ebe
 {
     public static $files = array (
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
-        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
-        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
+        '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -24,7 +21,6 @@ class ComposerStaticInit9e04d3c136ecb470ee085343daf86ebe
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
-            'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\VarDumper\\' => 28,
         ),
         'R' => 
@@ -34,20 +30,19 @@ class ComposerStaticInit9e04d3c136ecb470ee085343daf86ebe
         ),
         'P' => 
         array (
+            'Psr\\SimpleCache\\' => 16,
+            'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
-            'PhpOption\\' => 10,
         ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
-            'GrahamCampbell\\ResultType\\' => 26,
         ),
         'D' => 
         array (
-            'Dotenv\\' => 7,
             'DelisendApi\\' => 12,
         ),
         'B' => 
@@ -65,10 +60,6 @@ class ComposerStaticInit9e04d3c136ecb470ee085343daf86ebe
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
-        ),
         'Symfony\\Component\\VarDumper\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/var-dumper',
@@ -81,17 +72,22 @@ class ComposerStaticInit9e04d3c136ecb470ee085343daf86ebe
         array (
             0 => __DIR__ . '/..' . '/ramsey/collection/src',
         ),
+        'Psr\\SimpleCache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/src',
+        ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
-        ),
-        'PhpOption\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -104,14 +100,6 @@ class ComposerStaticInit9e04d3c136ecb470ee085343daf86ebe
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
-        ),
-        'GrahamCampbell\\ResultType\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/graham-campbell/result-type/src',
-        ),
-        'Dotenv\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
         'DelisendApi\\' => 
         array (
@@ -131,6 +119,8 @@ class ComposerStaticInit9e04d3c136ecb470ee085343daf86ebe
         'Delisend\\WC\\Lib\\WC_Delisend_Api' => __DIR__ . '/../..' . '/src/lib/WC_Delisend_Api.php',
         'Delisend\\WC\\Lib\\WC_Delisend_Connection' => __DIR__ . '/../..' . '/src/lib/WC_Delisend_Connection.php',
         'Delisend\\WC\\Lib\\WC_Delisend_Definitions' => __DIR__ . '/../..' . '/src/lib/WC_Delisend_Definitions.php',
+        'Delisend\\WC\\Lib\\WC_Delisend_Endpoint' => __DIR__ . '/../..' . '/src/lib/WC_Delisend_Endpoint.php',
+        'Delisend\\WC\\Lib\\WC_Delisend_Error' => __DIR__ . '/../..' . '/src/lib/WC_Delisend_Error.php',
         'Delisend\\WC\\Lib\\WC_Delisend_Exception' => __DIR__ . '/../..' . '/src/lib/WC_Delisend_Exception.php',
         'Delisend\\WC\\Lib\\WC_Delisend_Helper' => __DIR__ . '/../..' . '/src/lib/WC_Delisend_Helper.php',
         'Delisend\\WC\\Lib\\WC_Delisend_Install' => __DIR__ . '/../..' . '/src/lib/WC_Delisend_Install.php',
@@ -143,6 +133,7 @@ class ComposerStaticInit9e04d3c136ecb470ee085343daf86ebe
         'Delisend\\WC\\Lib\\WC_Delisend_Shipping' => __DIR__ . '/../..' . '/src/lib/WC_Delisend_Shipping.php',
         'Delisend\\WC\\Lib\\WC_Delisend_Utils' => __DIR__ . '/../..' . '/src/lib/WC_Delisend_Utils.php',
         'Delisend\\WC\\WC_Delisend_Loader' => __DIR__ . '/../..' . '/src/WC_Delisend_Loader.php',
+        'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',

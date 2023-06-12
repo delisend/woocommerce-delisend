@@ -2,7 +2,9 @@
 
 namespace Delisend\WC\Lib\Screens;
 
-if (!defined('ABSPATH')) { exit; }
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 use Delisend\WC\Lib\WC_Delisend_Definitions;
 use Delisend\WC\Lib\WC_Delisend_Connection;
@@ -89,11 +91,11 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
                     'att_name' => 'menu_style',
                     'type' => 'select',
                     'options' => array(
-                        'test' =>  __('Testing', WC_Delisend_Definitions::TEXT_DOMAIN),
-                        'prod' =>  __('Production', WC_Delisend_Definitions::TEXT_DOMAIN),
+                        'test' => __('Testing', WC_Delisend_Definitions::TEXT_DOMAIN),
+                        'prod' => __('Production', WC_Delisend_Definitions::TEXT_DOMAIN),
                     ),
                     'tooltip' => '',
-                    'default' =>  'prod'
+                    'default' => 'prod'
                 ),
 
                 array(
@@ -105,7 +107,7 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
 
                 array(
                     'id' => WC_Delisend_Definitions::OPTION_ACCESS_TOKEN,
-                    'title' => __('Barber API Token', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    'title' => __('Bearer token authentication', WC_Delisend_Definitions::TEXT_DOMAIN),
                     'description' => __('Log plugin events for debugging', WC_Delisend_Definitions::TEXT_DOMAIN),
                     'type' => 'textarea',
                     'default' => '',
@@ -179,7 +181,6 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
 
         /**
          * Renders the screen.
-         *
          */
         public function render()
         {
@@ -197,10 +198,11 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
                 <form class="wc-delisend-settings" method="post" id="mainform" action="" enctype="multipart/form-data">
 
                     <?php if ($this->is_connected) : ?>
-                    <?php // @TODO Moze sa pouzit ak sa nebude token pridavat napevno do nastaveni, ale plugin sa bude do Delisendu prihlasovat cez meno / heslo ?>
+                        <?php // @TODO Moze sa pouzit ak sa nebude token pridavat napevno do nastaveni, ale plugin sa bude do Delisendu prihlasovat cez meno / heslo ?>
                     <?php endif; ?>
 
                     <?php woocommerce_admin_fields($settings); ?>
+                    <input type="hidden" name="screen_id" value="<?php echo esc_attr($this->get_id()); ?>">
                     <input type="hidden" name="screen_id" value="<?php echo esc_attr($this->get_id()); ?>">
                     <?php wp_nonce_field('wc_delisend_admin_save_' . $this->get_id() . '_settings'); ?>
                     <?php submit_button(__('Save changes', 'wc-delisend'), 'primary', 'save_' . $this->get_id() . '_settings'); ?>
@@ -214,7 +216,8 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
                     <span class="delisend-upgrade">Upgrade To Pro Plan &amp; Get</span>
                     <strong class="delisend-OFF">30% OFF</strong>
                     <span class="delisend-with-code">User Coupon Code: <strong>NEWDELI30</strong></span>
-                    <a class="delisend-upgrade" href="https://delisend.com/#pricing" target="_blank">Upgrade To Pro Plan</a>
+                    <a class="delisend-upgrade" href="https://delisend.com/#pricing" target="_blank">Upgrade To Pro
+                        Plan</a>
                 </div>
             </div>
 
