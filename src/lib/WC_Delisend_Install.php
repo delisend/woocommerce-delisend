@@ -61,11 +61,11 @@ if (!class_exists('WC_Delisend_Install')) :
             $charset_collate = $wpdb->get_charset_collate();
 
             $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}delisend_rating_history (
-				id CHAR(36) NOT NULL,
-				user_id INT (11) DEFAULT NULL,
-                order_id VARCHAR (64) NOT NULL,
-                rating_id CHAR(36) NOT NULL,
-                rating_data text NOT NULL,
+				id bigint(20) unsigned NOT NULL auto_increment,
+				customer_id int (11) DEFAULT NULL,
+                order_id varchar (191) NOT NULL,
+                rating_id varchar(191) NOT NULL,
+                rating_data mediumtext NOT NULL,
                 created_at datetime NOT NULL,
 				PRIMARY KEY  (`id`),
 				UNIQUE KEY `idx_rating_id` (`rating_id`),

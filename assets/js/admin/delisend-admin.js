@@ -16,15 +16,24 @@
                 e.preventDefault();
 
                 let order_id = jQuery(this).data("order_id");
+                let customer_id = jQuery(this).data("customer_id");
 
                 jQuery.ajax({
                     type: 'POST',
                     url: window.ajaxurl,
+                    dataType: "json",
                     data: {
                         action: 'delisend_check_customer_rating',
                         order_id: order_id,
+                        customer_id: customer_id,
                     }, success: function (response) {
-                        console.log(response);
+                        if (response.results !== undefined) {
+                            let img_path = jQuery("#delisend_view_variant_content img").data("path");
+                            jQuery('#delisend_view_variant_content img').attr('src', img_path + response.results.variant + '-64.png');
+                            jQuery("#delisend_view_stat_content").html(response.results.count_views + "x");
+                            jQuery("#delisend_review_stat_content").html(response.results.count_ratings + "x");
+                            jQuery("#delisend_hazard_score_content").html(response.results.hazard_score + "%");
+                        }
                     }
                 });
             });
@@ -36,6 +45,7 @@
                 console.log('Post new rating to Delisend');
 
                 let order_id = jQuery(this).data("order_id");
+                let customer_id = jQuery(this).data("customer_id");
 
                 jQuery.confirm({
                     theme: 'light',
@@ -68,6 +78,7 @@
                                 jQuery.ajax({
                                     type: 'POST',
                                     url: window.ajaxurl,
+                                    dataType: "json",
                                     data: {
                                         order_id: order_id,
                                         rating: rating,

@@ -8,9 +8,7 @@ use DelisendApi\HeaderSelector;
 use DelisendApi\DelisendRestAPI;
 use Exception;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) { exit; }
 
 if (!class_exists('WC_Delisend_Api')) :
 
@@ -93,16 +91,16 @@ if (!class_exists('WC_Delisend_Api')) :
         /**
          * Get a list of all active shipping methods.
          *
+         * @param int $order_id
+         * @param null $associative
+         *
          * @return array
-         * @throws Exception
          */
-        public function get_delisend_rating($order_id = 0)
+        public function get_delisend_rating(int $order_id, $associative = null): array
         {
             $result = [];
             $store_id = preg_replace( "#^[^:/.]*[:/]+#i", "", get_option( 'siteurl' ));
-
             $server_ip_address = $this->getServerIpAddress();
-
             $order = wc_get_order($order_id);
 
             if ( empty($order) || empty($this->config)) {
@@ -139,15 +137,15 @@ if (!class_exists('WC_Delisend_Api')) :
             $request['store_id'] = $store_id;
 
             try {
-                $ratingApi = $delisend->RatingApi();
                 if (!empty($request)) {
-                    $result = json_decode($ratingApi->ratingGet($request));
+                    $ratingApi = $delisend->RatingApi();
+                    return json_decode($ratingApi->ratingGet($request), $associative);
                 }
             } catch (Exception $e) {
                 dump(json_decode($e->getResponseBody()));
             }
 
-            return $result;
+            return [];
         }
 
 
@@ -156,10 +154,9 @@ if (!class_exists('WC_Delisend_Api')) :
          * @param float $rating
          * @param string|null $comment
          * @param string $type
-         *
-         * @return array|mixed
+         * @return array
          */
-        public function create_delisend_customer_rating(int $order_id, float $rating = 2, string $comment = null, string $type = 'rma')
+        public function create_delisend_customer_rating(int $order_id, float $rating = 2, string $comment = null, string $type = 'rma'): array
         {
             $store_id = preg_replace("#^[^:/.]*[:/]+#i", "", get_option('siteurl'));
             $order = wc_get_order($order_id);
@@ -177,7 +174,6 @@ if (!class_exists('WC_Delisend_Api')) :
 
             $request['data']['email'] = $order->get_billing_email();
             $request['data']['phone'] = $order->get_billing_phone();
-
             $request['data']['firstname'] = $order->get_billing_first_name();
             $request['data']['lastname'] = $order->get_billing_last_name();
             $request['data']['address'] = $order->get_billing_address_1();
@@ -291,11 +287,6 @@ if (!class_exists('WC_Delisend_Api')) :
                 $server_ip_address = (!empty($_SERVER['LOCAL_ADDR']) ? $_SERVER['LOCAL_ADDR'] : "");
             }
             return $server_ip_address;
-        }
-
-        protected function create_delisend_request_data_by_order()
-        {
-
         }
     }
 

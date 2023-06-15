@@ -9,9 +9,9 @@ Version: 1.0.0
 Text Domain: wc-delisend
 Domain Path: /languages
 WC requires at least: 3.5
-WC tested up to: 5.1
+WC tested up to: 6.2.2
 Requires at least: 5.0
-Requires PHP: 7.0
+Requires PHP: 7.4
 */
 
 if (!defined('ABSPATH')) { exit; }
@@ -21,5 +21,5 @@ require_once(__DIR__ . '/includes/functions.php');
 // Load Composer autoloader
 require_once(__DIR__ . '/vendor/autoload.php');
 
-// plugins loaded callback
+// Plugins loaded callback
 Delisend\WC\WC_Delisend_Loader::instance();

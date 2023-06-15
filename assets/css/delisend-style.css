@@ -161,3 +161,7 @@ a.delisend-upgrade:hover {
     background: #87c852;
     transform: scale(1.1);
 }
+
+#delisend_view_variant {
+    width: 100%;
+}
