@@ -6,9 +6,9 @@ use Delisend\WC\Lib\WC_Delisend_Helper;
 if (!defined('ABSPATH')) { exit; }
 
 $text_domain = WC_Delisend_Definitions::TEXT_DOMAIN;
-$order = wc_get_order( $order_id );
 
 $customer_rating = WC_Delisend_Helper::wc_delisend()->get_rating_handler()->getByOrderId($order->get_id());
+$send_rating = WC_Delisend_Helper::wc_delisend()->get_rating_handler()->get_by_submit_order_to_delisend($order->get_id());
 if ($customer_rating === null) {
     $is_automatic_check = WC_Delisend_Helper::wc_delisend()->is_automatic_check_enabled();
     if ($is_automatic_check === true) {
@@ -81,8 +81,16 @@ if (!empty($customer_rating)) {
 		<?php endif; ?>
 
         <div class="delisend-rating-btn-group">
-            <button type="button" id="delisend-check-customer" class="button button-primary" data-order_id="<?php echo $order->get_id(); ?>" data-customer_id="<?php echo $order->get_customer_id(); ?>"><?php echo __('Verify customer', $text_domain); ?></button>
-            <button type="button" id="delisend-add-rating" class="button button-link-delete" data-order_id="<?php echo $order->get_id(); ?>" data-customer_id="<?php echo $order->get_customer_id(); ?>"><?php echo __('Evaluate customer', $text_domain); ?></button>
+            <button type="button" id="delisend-check-customer" class="button button-primary" data-order_id="<?php echo $order->get_id(); ?>" data-customer_id="<?php echo $order->get_customer_id(); ?>">
+                <?php echo __('Verify customer', $text_domain); ?>
+            </button>
+            <button type="button" id="delisend-add-rating" class="button button-link-delete" data-order_id="<?php echo $order->get_id(); ?>" data-customer_id="<?php echo $order->get_customer_id(); ?>">
+            <?php if (empty($send_rating)): ?>
+                <?php echo __('Evaluate customer', $text_domain); ?>
+            <?php else: ?>
+                <?php echo __('The rating was sent', $text_domain); ?>
+            <?php endif; ?>
+            </button>
         </div>
 	</div>
 </div>

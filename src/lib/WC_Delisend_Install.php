@@ -64,12 +64,14 @@ if (!class_exists('WC_Delisend_Install')) :
 				id bigint(20) unsigned NOT NULL auto_increment,
 				customer_id int (11) DEFAULT NULL,
                 order_id varchar (191) NOT NULL,
+                type varchar (16) NOT NULL,
                 rating_id varchar(191) NOT NULL,
                 rating_data mediumtext NOT NULL,
                 created_at datetime NOT NULL,
 				PRIMARY KEY  (`id`),
 				UNIQUE KEY `idx_rating_id` (`rating_id`),
                 INDEX `idx_order_id` (`order_id`)
+                INDEX `idx_type` (`type`)
 				) $charset_collate;";
 
             dbDelta($sql);

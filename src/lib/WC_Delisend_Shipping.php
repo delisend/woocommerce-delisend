@@ -30,6 +30,7 @@ if ( ! class_exists( 'WC_Delisend_Shipping' ) ) :
         public static function get_shipping_methods()
         {
             $data = array();
+            $shipping_list = array();
             $zones = fn_delisend_get_zones();
 
             foreach ( $zones as $zone) {

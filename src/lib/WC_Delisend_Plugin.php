@@ -457,7 +457,12 @@ if (!class_exists('WC_Delisend_Plugin')) :
                 $order_id = $post->ID;
             }
 
-            $order = new WC_Delisend_Order($order_id);
+            if(empty($order_id)) {
+                global $post;
+                $order_id = $post->ID;
+            }
+
+            $order = wc_get_order( $order_id );
 
             include_once($this->path('views') . '/admin/order-delisend-info-box.php');
         }
@@ -906,7 +911,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
             $rating = $api->get_delisend_rating_by_order($order_id);
 
             if ($rating) {
-                $this->rating_handler->create($customer_id, $order_id, $rating);
+                $this->rating_handler->create_get_log($customer_id, $order_id, $rating);
             }
 
             echo json_encode($rating);
@@ -929,7 +934,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
             $api = WC_Delisend_Api::getInstance();
             $rating = $api->get_delisend_rating_by_order($order_id);
             if ($rating) {
-                $this->rating_handler->create($customer_id, $order_id, $rating);
+                $this->rating_handler->create_get_log($customer_id, $order_id, $rating);
             }
 
             return [
@@ -943,6 +948,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
 
         /**
          * @return void
+         * @throws Exception
          */
         public function delisend_create_customer_rating(): void
         {
@@ -952,18 +958,26 @@ if (!class_exists('WC_Delisend_Plugin')) :
 
             $order_id = (int)$_POST['order_id'];
 
+            if (isset($_POST['customer_id'])) {
+                $customer_id = (int)$_POST['customer_id'];
+            } else {
+                $customer_id = 0;
+            }
+
             if (isset($_POST['rating'])) {
                 $rating = (float)$_POST['rating'];
             } else {
-                $rating = 2;
+                $rating = null;
             }
 
             $comment = trim(esc_html($_POST['comment']));
 
             $api = WC_Delisend_Api::getInstance();
-            $rating = $api->create_delisend_customer_rating($order_id, $rating, $comment);
-
-            echo json_encode($rating);
+            $response = $api->create_delisend_customer_rating($order_id, $rating, $comment);
+            if ($response) {
+                $this->rating_handler->add_create_type_log($customer_id, $order_id, $response, 'create');
+            }
+            echo json_encode($response);
 
             wp_die();
         }

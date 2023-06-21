@@ -18,8 +18,8 @@ class WC_Delisend_Order {
      *
      * @see WC_Order::__construct()
      */
-    public function __construct() {
-
+    public function __construct()
+    {
     }
 }
 

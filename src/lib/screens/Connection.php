@@ -128,14 +128,14 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
                     'options' => WC_Delisend_Shipping::get_shipping_methods(),
                 ),
 
-                array(
+                /*array(
                     'id' => WC_Delisend_Definitions::OPTION_HAZARD_RATE,
                     'title' => __('Hazard Rate', WC_Delisend_Definitions::TEXT_DOMAIN),
                     'type' => 'range',
                     'desc' => __('Customizing the hazard rate score value for blocking selected functions', WC_Delisend_Definitions::TEXT_DOMAIN),
                     'desc_tip' => true,
                     'input_attrs' => fn_delisend_customize_hazard_rate_range(),
-                ),
+                ),*/
 
                 array(
                     'id' => WC_Delisend_Definitions::OPTION_ENABLE_DEBUG_MODE,
@@ -165,7 +165,6 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
             if (get_transient('wc_delisend_connection_failed')) {
 
                 $message = sprintf(
-                /* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag, %5$s - <a> tag, %6$s - </a> tag */
                     __('%1$sHeads up!%2$s It looks like there was a problem with reconnecting your site to Delisend. Please %3$sclick here%4$s to try again, or %5$sget in touch with our support team%6$s for assistance.', WC_Delisend_Definitions::TEXT_DOMAIN),
                     '<strong>',
                     '</strong>',

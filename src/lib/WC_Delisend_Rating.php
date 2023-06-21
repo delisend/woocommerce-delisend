@@ -144,7 +144,30 @@ if (!class_exists('WC_Delisend_Rating')) :
             global $wpdb;
 
             $table = $this->table();
-            $statement = "SELECT * FROM $table WHERE order_id = %s";
+            $statement = "SELECT * FROM $table WHERE order_id = %s and type ='get'";
+            $sql = $wpdb->prepare($statement, $order_id);
+
+            if (($rating = $wpdb->get_row($sql, 'ARRAY_A')) && !empty($rating)) {
+                $rating['rating_data'] = maybe_unserialize($rating['rating_data']);
+                return $rating;
+            }
+
+            return null;
+        }
+        
+        /**
+         * Get log by order ID
+         *
+         * @param int $order_id
+         *
+         * @return array|null
+         */
+        public function get_by_submit_order_to_delisend(int $order_id): ?array
+        {
+            global $wpdb;
+
+            $table = $this->table();
+            $statement = "SELECT * FROM $table WHERE `order_id` = %s and `type` ='create' ORDER BY `created_at` DESC";
             $sql = $wpdb->prepare($statement, $order_id);
 
             if (($rating = $wpdb->get_row($sql, 'ARRAY_A')) && !empty($rating)) {
@@ -157,16 +180,17 @@ if (!class_exists('WC_Delisend_Rating')) :
 
 
         /**
-         * Create a new rating log in the database.
+         * Create a new log in the database.
          *
          * @param int $customer_id
          * @param int $order_id
          * @param array $rating
+         * @param string $type
          *
          * @return mixed int|false The number of rows inserted, or false on error.
          * @throws \Exception
          */
-        public function create(int $customer_id, int $order_id, array $rating)
+        public function create_get_log(int $customer_id, int $order_id, array $rating, string $type = 'get')
         {
             global $wpdb;
 
@@ -185,8 +209,33 @@ if (!class_exists('WC_Delisend_Rating')) :
             return $wpdb->insert($this->table(), [
                 'customer_id' => $customer_id,
                 'order_id' => $order_id,
+                'type' => $type,
                 'rating_id' => $rating['rating_id'],
                 'rating_data' => maybe_serialize($rating_data),
+                'created_at' => $this->datetime()->format(self::DEFAULT_DATE_TIME_FORMAT),
+            ]);
+        }
+
+        /**
+         * Create a new log in the database.
+         *
+         * @param int $customer_id
+         * @param int $order_id
+         * @param array $response
+         * @param string $type
+         *
+         * @return mixed int|false The number of rows inserted, or false on error.
+         * @throws \Exception
+         */
+        public function add_create_type_log(int $customer_id, int $order_id, array $response, string $type = 'create')
+        {
+            global $wpdb;
+            return $wpdb->insert($this->table(), [
+                'customer_id' => $customer_id,
+                'order_id' => $order_id,
+                'type' => $type,
+                'rating_id' => null,
+                'rating_data' => maybe_serialize($response),
                 'created_at' => $this->datetime()->format(self::DEFAULT_DATE_TIME_FORMAT),
             ]);
         }
