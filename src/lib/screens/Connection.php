@@ -49,7 +49,7 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
          * @return array
          * @throws \Exception
          */
-        public function get_settings()
+        public function get_settings(): array
         {
             return array(
 
@@ -129,6 +129,15 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
                 ),
 
                 array(
+                    'id' => WC_Delisend_Definitions::OPTION_HAZARD_RATE,
+                    'title' => __('Hazard Rate', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    'type' => 'range',
+                    'desc' => __('Customizing the hazard rate score value for blocking selected functions', WC_Delisend_Definitions::TEXT_DOMAIN),
+                    'desc_tip' => true,
+                    'input_attrs' => fn_delisend_customize_hazard_rate_range(),
+                ),
+
+                array(
                     'id' => WC_Delisend_Definitions::OPTION_ENABLE_DEBUG_MODE,
                     'title' => __('Enable debug mode', WC_Delisend_Definitions::TEXT_DOMAIN),
                     'type' => 'checkbox',
@@ -182,7 +191,7 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
         /**
          * Renders the screen.
          */
-        public function render()
+        public function render(): void
         {
             /**
              * Filters the screen settings.
@@ -216,8 +225,7 @@ if (!class_exists(\Delisend\WC\Lib\Screens\Connection::class)) :
                     <span class="delisend-upgrade">Upgrade To Pro Plan &amp; Get</span>
                     <strong class="delisend-OFF">30% OFF</strong>
                     <span class="delisend-with-code">User Coupon Code: <strong>NEWDELI30</strong></span>
-                    <a class="delisend-upgrade" href="https://delisend.com/#pricing" target="_blank">Upgrade To Pro
-                        Plan</a>
+                    <a class="delisend-upgrade" href="https://delisend.com/#pricing" target="_blank">Upgrade To Pro Plan</a>
                 </div>
             </div>
 

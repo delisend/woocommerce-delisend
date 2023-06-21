@@ -5,6 +5,7 @@ namespace Delisend\WC\Lib;
 if (!defined('ABSPATH')) { exit; }
 
 use Automattic\Jetpack\Constants;
+use JetBrains\PhpStorm\NoReturn;
 use \ReflectionClass;
 use \Exception;
 
@@ -22,9 +23,6 @@ if (!class_exists('WC_Delisend_Plugin')) :
 
         /** @var string plugin id */
         private string $id;
-
-        /** @var string The plugin version */
-        private $version;
 
         /** @var string The plugin slug */
         public static string $plugin_slug = WC_Delisend_Definitions::PLUGIN_SLUG;
@@ -84,7 +82,6 @@ if (!class_exists('WC_Delisend_Plugin')) :
 
             // required params
             $this->id = WC_Delisend_Definitions::PLUGIN_ID;
-            $this->version = WC_Delisend_Definitions::PLUGIN_VERSION;
 
             // Set plugin's paths
             $this->set_paths();
@@ -251,8 +248,8 @@ if (!class_exists('WC_Delisend_Plugin')) :
                     add_action('plugins_loaded', array($this, 'plugins_loaded'));
                     add_action('woocommerce_init', array($this, 'woocommerce_loaded'), 1);
 
-                    //add_action( 'woocommerce_order_status_changed', array( $this, 'delisend_status_changed' ), 10 , 3 );
-                    //add_action( 'woocommerce_order_details_after_order_table', array($this, 'delisend_details_after_order_table'), 20, 2);
+                    add_action( 'woocommerce_order_status_changed', array( $this, 'delisend_status_changed' ), 10 , 3 );
+                    add_action( 'woocommerce_order_details_after_order_table', array($this, 'delisend_details_after_order_table'), 20, 2);
                     add_action('wp_ajax_delisend_check_customer_rating', array($this, 'delisend_check_customer_rating'));
                     add_action('wp_ajax_delisend_create_customer_rating', array($this, 'delisend_create_customer_rating'));
                 }
@@ -740,14 +737,14 @@ if (!class_exists('WC_Delisend_Plugin')) :
         }
 
 
-        /*public function delisend_status_changed( $order_id , $old_order_status = '' , $new_order_status = '') {
+        public function delisend_status_changed( $order_id , $old_order_status = '' , $new_order_status = '')
+        {
+        }
 
-        }*/
 
-
-        /*public function delisend_details_after_order_table($order) {
-
-        }*/
+        public function delisend_details_after_order_table($order)
+        {
+        }
 
 
         /**
@@ -794,20 +791,23 @@ if (!class_exists('WC_Delisend_Plugin')) :
         {
             // it is only updated after changing the data for Billing data on the checkout page
             if (is_checkout()) {
-
                 if (get_option(WC_Delisend_Definitions::OPTION_ENABLE_ON_CHECKOUT_PAGE) === 'yes' || get_option(WC_Delisend_Definitions::OPTION_ENABLE_AUTOMATIC_CHECK) === 'yes') {
-
-                    $data = WC_Delisend_Helper::get_requested_post_data($_REQUEST['post_data']);
-
-                    $api = WC_Delisend_Api::getInstance();
-                    $rating = $api->get_delisend_rating_by_shipping($data);
-
-                    // @TODO Pridat settings pre hazard_rate
-                    if ($rating->results->hazard_rate >= 80) {
-                        $disable_method = get_option(WC_Delisend_Definitions::OPTION_SHIPPING_FILTER);
-                        if (!empty($disable_method)) {
-                            foreach ($disable_method as $shipping_id) {
-                                unset($available_methods['flat_rate:' . $shipping_id]);
+                    if (isset($_REQUEST['post_data'])) {
+                        $data = WC_Delisend_Helper::get_requested_post_data($_REQUEST['post_data']);
+                        $api = WC_Delisend_Api::getInstance();
+                        $rating = $api->get_delisend_rating_by_shipping($data);
+                        $hazard_rate = get_option(WC_Delisend_Definitions::OPTION_HAZARD_RATE);
+                        if (empty($hazard_rate)) {
+                            $hazard_rate = 70;
+                        }
+                        if ($rating['status'] !== 'error') {
+                            if ($rating['results']['hazard_rate'] >= $hazard_rate) {
+                                $disable_method = get_option(WC_Delisend_Definitions::OPTION_SHIPPING_FILTER);
+                                if (!empty($disable_method)) {
+                                    foreach ($disable_method as $shipping_id) {
+                                        unset($available_methods['flat_rate:' . $shipping_id]);
+                                    }
+                                }
                             }
                         }
                     }
@@ -903,7 +903,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
             $customer_id = (int)$_POST['customer_id'];
 
             $api = WC_Delisend_Api::getInstance();
-            $rating = $api->get_delisend_rating($order_id, true);
+            $rating = $api->get_delisend_rating_by_order($order_id);
 
             if ($rating) {
                 $this->rating_handler->create($customer_id, $order_id, $rating);
@@ -927,7 +927,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
         public function delisend_check_customer_rating_from_widget(int $order_id, int $customer_id): array
         {
             $api = WC_Delisend_Api::getInstance();
-            $rating = $api->get_delisend_rating($order_id, true);
+            $rating = $api->get_delisend_rating_by_order($order_id);
             if ($rating) {
                 $this->rating_handler->create($customer_id, $order_id, $rating);
             }
@@ -941,7 +941,10 @@ if (!class_exists('WC_Delisend_Plugin')) :
             ];
         }
 
-        public function delisend_create_customer_rating()
+        /**
+         * @return void
+         */
+        #[NoReturn] public function delisend_create_customer_rating(): void
         {
 
             if (!isset($_POST['order_id'])) {

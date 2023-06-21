@@ -99,6 +99,9 @@ class WC_Delisend_Definitions {
     /** @var string automatic check when opening an order option name */
     const OPTION_ENABLE_AUTOMATIC_CHECK = 'wc_delisend_enable_automatic_check';
 
+    /** @var string automatic check when opening an order option name */
+    const OPTION_HAZARD_RATE = 'wc_delisend_hazard_rate';
+
     /** @var string automatic check on checkout page */
     const OPTION_ENABLE_ON_CHECKOUT_PAGE = 'wc_delisend_enable_on_checkout_page';
 

@@ -338,7 +338,7 @@ class RatingApi
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function createRatingByOrderPostWithHttpInfo($order, $order_id, $rating, $comment): array
+    protected function createRatingByOrderPostWithHttpInfo($order, $order_id, $rating, $comment): array
     {
         $returnType = 'string';
         $request = $this->createRatingByOrderPostRequest($order, $order_id, $rating, $comment);

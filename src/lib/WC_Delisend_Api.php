@@ -92,11 +92,10 @@ if (!class_exists('WC_Delisend_Api')) :
          * Get a list of all active shipping methods.
          *
          * @param int $order_id
-         * @param null $associative
          *
          * @return array
          */
-        public function get_delisend_rating(int $order_id, $associative = null): array
+        public function get_delisend_rating_by_order(int $order_id): array
         {
             $result = [];
             $store_id = preg_replace( "#^[^:/.]*[:/]+#i", "", get_option( 'siteurl' ));
@@ -139,13 +138,44 @@ if (!class_exists('WC_Delisend_Api')) :
             try {
                 if (!empty($request)) {
                     $ratingApi = $delisend->RatingApi();
-                    return json_decode($ratingApi->ratingGet($request), $associative);
+                    return json_decode($ratingApi->ratingGet($request), true);
                 }
             } catch (Exception $e) {
                 dump(json_decode($e->getResponseBody()));
             }
 
             return [];
+        }
+
+
+        /**
+         * @param array $shipping
+         *
+         * @return array
+         * @throws Exception
+         */
+        public function get_delisend_rating_by_shipping(array $shipping): array
+        {
+            $result = [];
+
+            if (empty($shipping) || empty($this->config)) {
+                return $result;
+            }
+
+            $delisend = new DelisendRestAPI(new Client, $this->config, new HeaderSelector);
+            $request = $this->create_delisend_request_data_by_shipping($shipping);
+
+            try {
+                $ratingApi = $delisend->RatingApi();
+                if (!empty($request)) {
+                    $result = json_decode($ratingApi->ratingGet($request), true);
+                }
+            } catch (Exception $e) {
+                //@TODO "message": "Váš denný limit je vyčerpaný. Pre zvýšenie počtu overení prejdite na vyššie predplatné."
+                $result = json_decode($e->getResponseBody(), true);
+            }
+
+            return $result;
         }
 
 
@@ -192,40 +222,10 @@ if (!class_exists('WC_Delisend_Api')) :
             try {
                 $ratingApi = $delisend->RatingApi();
                 if (!empty($request)) {
-                    $result = json_decode($ratingApi->createRatingByOrder($request, $order_id, $rating, $comment));
+                    $result = json_decode($ratingApi->createRatingByOrder($request, $order_id, $rating, $comment), true);
                 }
             } catch (Exception $e) {
                 dump(json_decode($e->getResponseBody()));
-            }
-
-            return $result;
-        }
-
-
-        /**
-         * @param array $shipping
-         *
-         * @return array
-         * @throws Exception
-         */
-        public function get_delisend_rating_by_shipping(array $shipping): array
-        {
-            $result = [];
-
-            if (empty($shipping) || empty($this->config)) {
-                return $result;
-            }
-
-            $delisend = new DelisendRestAPI(new Client, $this->config, new HeaderSelector);
-            $request = $this->create_delisend_request_data_by_shipping($shipping);
-
-            try {
-                $ratingApi = $delisend->RatingApi();
-                if (!empty($request)) {
-                    $result = json_decode($ratingApi->ratingGet($request));
-                }
-            } catch (Exception $e) {
-                //dump(json_decode($e->getResponseBody()));
             }
 
             return $result;
@@ -276,6 +276,7 @@ if (!class_exists('WC_Delisend_Api')) :
 
             return $request;
         }
+
 
         /**
          * @return mixed|string

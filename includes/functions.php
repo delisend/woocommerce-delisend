@@ -92,3 +92,33 @@ if (!function_exists('fn_delisend_get_ip_address')) {
     }
 
 }
+
+if (!function_exists('fn_delisend_customize_hazard_rate_range')) {
+    /**
+     * Input attributes for hazard rate opacity option.
+     *
+     * @return array Array containing attribute names and their values.
+     */
+    function fn_delisend_customize_hazard_rate_range(): array
+    {
+        /**
+         * Filters the input attributes for hazard rate.
+         *
+         * @param array $attrs {
+         *     The attributes.
+         *
+         *     @type int $min  Minimum value.
+         *     @type int $max  Maximum value.
+         *     @type int $step Interval between numbers.
+         * }
+         */
+        return apply_filters(
+            'delisend_customize_hazard_rate_range',
+            [
+                'min'  => 0,
+                'max'  => 90,
+                'step' => 5,
+            ]
+        );
+    }
+}

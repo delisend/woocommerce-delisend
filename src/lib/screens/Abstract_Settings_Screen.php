@@ -20,32 +20,30 @@ abstract class Abstract_Settings_Screen {
 	/**
      * @var string screen ID
      */
-	protected $id;
+	protected string $id;
 
 	/**
      * @var string screen label, for display
      */
-	protected $label;
+	protected string $label;
 
 	/**
      * @var string screen title, for display
      */
-	protected $title;
+	protected string $title;
 
 	/**
      * @var string screen description, for display
      */
-	protected $description = "Get started with Delisend. Connect or create a Delisend account.<br>You get a solution for fraud prevention solution to protect the online businesses.";
+	protected string $description = "Get started with Delisend. Connect or create a Delisend account.<br>You get a solution for fraud prevention solution to protect the online businesses.";
 
 	/**
 	 * Renders the screen for settings .
 	 */
-	public function render() {
-
+	public function render(): void
+    {
         /**
          * Filters the screen settings.
-         *
-         * @since 2.0.0
          *
          * @param array $settings settings
          */
@@ -54,12 +52,18 @@ abstract class Abstract_Settings_Screen {
         if ( empty( $settings ) ) {
             return;
         }
+
         $connection_handler = Helper::wc_delisend()->get_connection_handler();
         $is_connected = $connection_handler->is_connected();
+
         ?>
 
-        <?php if ( ! $is_connected ) : ?>
-			<div class="notice notice-info"><p><?php echo wp_kses_post( $this->get_disconnected_message() ); ?></p></div>
+        <?php if ( $is_connected ) : ?>
+			<div class="notice notice-info">
+                <p><?php echo wp_kses_post( $this->get_disconnected_message() ); ?></p>
+            </div>
+		<?php else: ?>
+            <?php  $this->get_connect_status();  ?>
 		<?php endif; ?>
 
         <?php
@@ -68,10 +72,11 @@ abstract class Abstract_Settings_Screen {
 
 	/**
 	 * Saves the settings.
-	 *
-	 * @throws WC_Delisend_Exception
-	 */
-	public function save() {
+     *
+     * @return void
+     */
+	public function save(): void
+    {
 		woocommerce_update_options( $this->get_settings() );
 	}
 
@@ -81,8 +86,8 @@ abstract class Abstract_Settings_Screen {
 	 *
 	 * @return bool
 	 */
-	protected function is_current_screen_page() {
-
+	protected function is_current_screen_page(): bool
+    {
 		if ( WC_Delisend_Settings::PAGE_ID !== Helper::get_requested_value( 'page' ) ) {
 			return false;
 		}
@@ -101,16 +106,26 @@ abstract class Abstract_Settings_Screen {
 	 *
 	 * @return array
 	 */
-	abstract public function get_settings();
+	abstract public function get_settings(): array;
 
 
-	/**
-	 * Gets the message to display when the plugin is disconnected.
+    /**
+     * This method is used to stripe connect button.
+     */
+    public function get_connect_status( ): void
+    {
+        do_action( 'wc_delisend_before_connection_with_delisend' );
+    }
+
+
+    /**
+	 * Get the notice-info message to display when the plugin is disconnected.
 	 *
 	 * @return string
 	 */
-	public function get_disconnected_message() {
-		return '';
+	public function get_disconnected_message(): string
+    {
+		return 'Delisend requires a REST API connection to the service. Have questions about connecting with Delisend? Read <a href="https://delisend.com/docs/delisend-api-settings" target="_blank"> document. </a>.';
 	}
 
 
@@ -119,7 +134,8 @@ abstract class Abstract_Settings_Screen {
 	 *
 	 * @return string
 	 */
-	public function get_id() {
+	public function get_id(): string
+    {
 		return $this->id;
 	}
 
@@ -129,8 +145,8 @@ abstract class Abstract_Settings_Screen {
 	 *
 	 * @return string
 	 */
-	public function get_label() {
-
+	public function get_label(): string
+    {
 		/**
 		 * Filters the screen label.
 		 *
@@ -145,8 +161,8 @@ abstract class Abstract_Settings_Screen {
 	 *
 	 * @return string
 	 */
-	public function get_title() {
-
+	public function get_title(): string
+    {
 		/**
 		 * Filters the screen title.
 		 *
@@ -161,8 +177,8 @@ abstract class Abstract_Settings_Screen {
 	 *
 	 * @return string
 	 */
-	public function get_description() {
-
+	public function get_description(): string
+    {
 		/**
 		 * Filters the screen description.
 		 *
