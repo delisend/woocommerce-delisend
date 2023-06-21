@@ -481,7 +481,11 @@ class RatingApi
         $_tempBody = null;
 
         $resourcePath = '/rating/create';
+
         $formParams = $order;
+        $formParams['data']['rating'] = $rating;
+        $formParams['data']['comment'] = $comment;
+
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';

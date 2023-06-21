@@ -944,9 +944,8 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * @return void
          */
-        #[NoReturn] public function delisend_create_customer_rating(): void
+        public function delisend_create_customer_rating(): void
         {
-
             if (!isset($_POST['order_id'])) {
                 wp_die(0);
             }

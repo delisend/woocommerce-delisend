@@ -186,7 +186,7 @@ if (!class_exists('WC_Delisend_Api')) :
          * @param string $type
          * @return array
          */
-        public function create_delisend_customer_rating(int $order_id, float $rating = 2, string $comment = null, string $type = 'rma'): array
+        public function create_delisend_customer_rating(int $order_id, float $rating = 0, string $comment = null, string $type = 'delivery'): array
         {
             $store_id = preg_replace("#^[^:/.]*[:/]+#i", "", get_option('siteurl'));
             $order = wc_get_order($order_id);
