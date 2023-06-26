@@ -3,7 +3,7 @@
         'name' => 'delisend/woocommerce-delisend',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'a66f40c0079d79f74df4a3b94b9b32da1ccdebb5',
+        'reference' => '7ed9c9ba0787578a10f4a6feab53514ce163070b',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'delisend/woocommerce-delisend' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'a66f40c0079d79f74df4a3b94b9b32da1ccdebb5',
+            'reference' => '7ed9c9ba0787578a10f4a6feab53514ce163070b',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
