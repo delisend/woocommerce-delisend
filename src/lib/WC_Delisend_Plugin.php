@@ -590,7 +590,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
             $bot_types = 'bot|crawl|slurp|spider';
 
             $result = !empty($user_agent) ? preg_match("/$bot_types/", $user_agent) > 0 : false;
-            return apply_filters('wc_aelia_visitor_is_bot', $result);
+            return apply_filters('wc_delisend_visitor_is_bot', $result);
         }
 
 
