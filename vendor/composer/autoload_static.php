@@ -137,7 +137,6 @@ class ComposerStaticInit9e04d3c136ecb470ee085343daf86ebe
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
-        'foroco\\BrowserDetection' => __DIR__ . '/..' . '/foroco/php-browser-detection/src/BrowserDetection.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
