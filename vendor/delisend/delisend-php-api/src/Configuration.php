@@ -12,65 +12,65 @@ use InvalidArgumentException;
 class Configuration
 {
     /**
-     * @var
+     * @var Configuration
      */
-    private static $defaultConfiguration;
+    private Configuration $defaultConfiguration;
 
     /**
      * Associate array to store API key(s)
      *
      * @var string[]
      */
-    protected $apiKeys = [];
+    protected array $apiKeys = [];
 
     /**
      * Associate array to store API prefix (e.g. Bearer)
      *
      * @var string[]
      */
-    protected $apiKeyPrefixes = [];
+    protected array $apiKeyPrefixes = [];
 
     /**
      * Access token for OAuth
      *
      * @var string
      */
-    protected $accessToken = '';
+    protected string $accessToken = '';
 
     /**
      * Username for HTTP basic authentication
      *
      * @var string
      */
-    protected $username = '';
+    protected string $username = '';
 
     /**
      * Password for HTTP basic authentication
      *
      * @var string
      */
-    protected $password = '';
+    protected string $password = '';
 
     /**
      * Tracking ID
      *
      * @var string
      */
-    protected $tracking_id  = '';
+    protected string $tracking_id  = '';
 
     /**
      * Password for HTTP basic authentication
      *
      * @var string
      */
-    protected $environment  = 'test';
+    protected string $environment  = 'test';
 
     /**
      * The host
      *
      * @var array
      */
-    protected $host = [
+    protected array $host = [
         'test' =>'https://delisend.com/api/test',
         'prod' =>'https://delisend.com/api/v1',
     ];
@@ -80,33 +80,33 @@ class Configuration
      *
      * @var string
      */
-    protected $userAgent = 'Delisend-Codegen/1.0.0/php';
+    protected string $userAgent = 'Delisend-Codegen/1.0.0/php';
 
     /**
      * Debug switch (default set to false)
      *
      * @var bool
      */
-    protected $debug = false;
+    protected bool $debug = false;
 
     /**
      * Debug file location (log to STDOUT by default)
      *
      * @var string
      */
-    protected $debugFile = 'php://output';
+    protected string $debugFile = 'php://output';
 
     /**
      * Debug file location (log to STDOUT by default)
      *
      * @var string
      */
-    protected $tempFolderPath;
+    protected string $tempFolderPath;
 
     /**
      * @var Configuration
      */
-    private static $instance;
+    private static Configuration $instance;
 
 
     /**
@@ -124,13 +124,18 @@ class Configuration
      *
      * @return Configuration
      */
-    public static function instance()
+    public static function instance(): Configuration
     {
         if (null === self::$instance) {
             self::$instance = new self();
         }
 
         return self::$instance;
+    }
+
+    private static function getDefaultConfiguration(): Configuration
+    {
+        return self::instance();
     }
 
 
@@ -141,7 +146,7 @@ class Configuration
      * @param string $key API key or token
      * @return $this
      */
-    public function setApiKey($apiKeyIdentifier, $key)
+    public function setApiKey(string $apiKeyIdentifier, string $key): static
     {
         $this->apiKeys[$apiKeyIdentifier] = $key;
         return $this;
@@ -152,11 +157,11 @@ class Configuration
      * Gets API key
      *
      * @param string $apiKeyIdentifier API key identifier (authentication scheme)
-     * @return string API key or token
+     * @return string|null API key or token
      */
-    public function getApiKey($apiKeyIdentifier)
+    public function getApiKey(string $apiKeyIdentifier): ?string
     {
-        return isset($this->apiKeys[$apiKeyIdentifier]) ? $this->apiKeys[$apiKeyIdentifier] : null;
+        return $this->apiKeys[$apiKeyIdentifier] ?? null;
     }
 
 
@@ -167,7 +172,7 @@ class Configuration
      * @param string $prefix API key prefix, e.g. Bearer
      * @return $this
      */
-    public function setApiKeyPrefix($apiKeyIdentifier, $prefix)
+    public function setApiKeyPrefix(string $apiKeyIdentifier, string $prefix): static
     {
         $this->apiKeyPrefixes[$apiKeyIdentifier] = $prefix;
         return $this;
@@ -178,11 +183,11 @@ class Configuration
      * Gets API key prefix
      *
      * @param string $apiKeyIdentifier API key identifier (authentication scheme)
-     * @return string
+     * @return string|null
      */
-    public function getApiKeyPrefix($apiKeyIdentifier)
+    public function getApiKeyPrefix(string $apiKeyIdentifier): ?string
     {
-        return isset($this->apiKeyPrefixes[$apiKeyIdentifier]) ? $this->apiKeyPrefixes[$apiKeyIdentifier] : null;
+        return $this->apiKeyPrefixes[$apiKeyIdentifier] ?? null;
     }
 
 
@@ -192,7 +197,7 @@ class Configuration
      * @param string $accessToken Token for OAuth
      * @return $this
      */
-    public function setAccessToken($accessToken)
+    public function setAccessToken(string $accessToken): static
     {
         $this->accessToken = $accessToken;
         return $this;
@@ -203,7 +208,7 @@ class Configuration
      * Gets the access token for OAuth
      * @return string Access token for OAuth
      */
-    public function getAccessToken()
+    public function getAccessToken(): string
     {
         return $this->accessToken;
     }
@@ -215,7 +220,7 @@ class Configuration
      * @param string $username Username for HTTP basic authentication
      * @return $this
      */
-    public function setUsername(string $username)
+    public function setUsername(string $username): static
     {
         $this->username = $username;
         return $this;
@@ -239,7 +244,7 @@ class Configuration
      * @param string $password Password for HTTP basic authentication
      * @return $this
      */
-    public function setPassword($password): Configuration
+    public function setPassword(string $password): Configuration
     {
         $this->password = $password;
         return $this;
@@ -262,7 +267,7 @@ class Configuration
      * @param string $environment Password for HTTP basic authentication
      * @return $this
      */
-    public function setEnvironment(string $environment)
+    public function setEnvironment(string $environment): static
     {
         $this->environment = $environment;
         return $this;
@@ -274,7 +279,7 @@ class Configuration
      *
      * @return string Password for HTTP basic authentication
      */
-    public function getEnvironment ()
+    public function getEnvironment (): string
     {
         return $this->environment ;
     }
@@ -286,7 +291,7 @@ class Configuration
      * @param string $tracking_id
      * @return $this
      */
-    public function setTrackingId(string $tracking_id)
+    public function setTrackingId(string $tracking_id): static
     {
         $this->tracking_id = $tracking_id;
         return $this;
@@ -298,7 +303,7 @@ class Configuration
      *
      * @return string
      */
-    public function getTrackingId ()
+    public function getTrackingId (): string
     {
         return $this->tracking_id ;
     }
@@ -309,7 +314,7 @@ class Configuration
      * @param string $host Host
      * @return $this
      */
-    public function setHost($host)
+    public function setHost(string $host): static
     {
         $this->host[$this->environment] = $host;
         return $this;
@@ -321,7 +326,7 @@ class Configuration
      *
      * @return string Host
      */
-    public function getHost(string $environment = null)
+    public function getHost(string $environment = null): string
     {
         if ($environment === null) {
             $environment = $this->environment;
@@ -337,12 +342,8 @@ class Configuration
      * @return $this
      * @throws InvalidArgumentException
      */
-    public function setUserAgent($userAgent)
+    public function setUserAgent(string $userAgent): static
     {
-        if (!is_string($userAgent)) {
-            throw new InvalidArgumentException('User-agent must be a string.');
-        }
-
         $this->userAgent = $userAgent;
         return $this;
     }
@@ -353,7 +354,7 @@ class Configuration
      *
      * @return string user agent
      */
-    public function getUserAgent()
+    public function getUserAgent(): string
     {
         return $this->userAgent;
     }
@@ -365,7 +366,7 @@ class Configuration
      * @param bool $debug Debug flag
      * @return $this
      */
-    public function setDebug($debug)
+    public function setDebug(bool $debug): static
     {
         $this->debug = $debug;
         return $this;
@@ -377,7 +378,7 @@ class Configuration
      *
      * @return bool
      */
-    public function getDebug()
+    public function getDebug(): bool
     {
         return $this->debug;
     }
@@ -389,7 +390,7 @@ class Configuration
      * @param string $debugFile Debug file
      * @return $this
      */
-    public function setDebugFile($debugFile)
+    public function setDebugFile(string $debugFile): static
     {
         $this->debugFile = $debugFile;
         return $this;
@@ -401,7 +402,7 @@ class Configuration
      *
      * @return string
      */
-    public function getDebugFile()
+    public function getDebugFile(): string
     {
         return $this->debugFile;
     }
@@ -413,7 +414,7 @@ class Configuration
      * @param string $tempFolderPath Temp folder path
      * @return $this
      */
-    public function setTempFolderPath($tempFolderPath)
+    public function setTempFolderPath(string $tempFolderPath): static
     {
         $this->tempFolderPath = $tempFolderPath;
         return $this;
@@ -425,7 +426,7 @@ class Configuration
      *
      * @return string Temp folder path
      */
-    public function getTempFolderPath()
+    public function getTempFolderPath(): string
     {
         return $this->tempFolderPath;
     }
@@ -436,7 +437,7 @@ class Configuration
      *
      * @return string The report for debugging
      */
-    public static function toDebugReport()
+    public static function toDebugReport(): string
     {
         $report = 'PHP SDK (Delisend) Debug Report:' . PHP_EOL;
         $report .= '    OS: ' . php_uname() . PHP_EOL;
@@ -452,9 +453,9 @@ class Configuration
      * Get API key (with prefix if set)
      *
      * @param string $apiKeyIdentifier name of apikey
-     * @return string API key with the prefix
+     * @return string|null API key with the prefix
      */
-    public function getApiKeyWithPrefix($apiKeyIdentifier)
+    public function getApiKeyWithPrefix(string $apiKeyIdentifier): ?string
     {
         $prefix = $this->getApiKeyPrefix($apiKeyIdentifier);
         $apiKey = $this->getApiKey($apiKeyIdentifier);

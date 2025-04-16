@@ -12,7 +12,6 @@ if (!class_exists('WC_Delisend_Plugin')) :
      */
     class WC_Delisend_Exception extends \Exception
     {
-
     }
 
 endif;

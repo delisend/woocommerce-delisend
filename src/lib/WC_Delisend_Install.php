@@ -50,7 +50,7 @@ if (!class_exists('WC_Delisend_Install')) :
          *
          * @return bool
          */
-        private function create_queue_tables()
+        private function create_queue_tables(): bool
         {
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -61,22 +61,30 @@ if (!class_exists('WC_Delisend_Install')) :
             $charset_collate = $wpdb->get_charset_collate();
 
             $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}delisend_rating_history (
-				id bigint(20) unsigned NOT NULL auto_increment,
-				customer_id int (11) DEFAULT NULL,
-                order_id varchar (191) NOT NULL,
-                type varchar (16) NOT NULL,
-                rating_id varchar(191) NOT NULL,
-                rating_data mediumtext NOT NULL,
-                created_at datetime NOT NULL,
+				`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `customer_id` int(11) DEFAULT NULL,
+                `order_id` varchar(191) NOT NULL,
+                `type` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'get',
+                `rating_id` varchar(191) DEFAULT NULL,
+                `rating_data` mediumtext NOT NULL,
+                `created_at` datetime NOT NULL,
 				PRIMARY KEY  (`id`),
 				UNIQUE KEY `idx_rating_id` (`rating_id`),
-                INDEX `idx_order_id` (`order_id`)
+                INDEX `idx_order_id` (`order_id`),
                 INDEX `idx_type` (`type`)
 				) $charset_collate;";
 
-            dbDelta($sql);
+            $create_table_status = dbDelta($sql);
 
-            return true;
+            if ($wpdb->last_error !== '') :
+                $wpdb->print_error();
+            endif;
+
+            if ($create_table_status && !$wpdb->last_error) {
+                return true;
+            }
+
+            return false;
         }
 
 
@@ -87,7 +95,6 @@ if (!class_exists('WC_Delisend_Install')) :
          */
         private function install(): void
         {
-
             $this->create_queue_tables();
 
             // set the Delisend WooCommerce version at the time of install

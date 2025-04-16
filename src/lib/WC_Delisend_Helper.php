@@ -12,20 +12,17 @@ if (!defined('ABSPATH')) {
  */
 class WC_Delisend_Helper
 {
-
-
     /**
      * Safely gets a value from $_POST.
      * If the expected data is a string also trims it.
      *
-     * @param string $key                               posted data key
-     * @param int|float|array|bool|null|string $default default data type to return (default empty string)
+     * @param string $key posted data key
+     * @param float|array|bool|int|string|null $default default data type to return (default empty string)
      *
      * @return int|float|array|bool|null|string posted data value if key found, or default
      */
-    public static function get_posted_value($key, $default = '')
+    public static function get_posted_value(string $key, float|array|bool|int|string|null $default = ''): float|int|bool|array|string|null
     {
-
         $value = $default;
 
         if (isset($_POST[$key])) {
@@ -40,14 +37,13 @@ class WC_Delisend_Helper
      * Safely gets a value from $_REQUEST.
      * If the expected data is a string also trims it.
      *
-     * @param string $key                               posted data key
-     * @param int|float|array|bool|null|string $default default data type to return (default empty string)
+     * @param string $key posted data key
+     * @param float|array|bool|int|string|null $default default data type to return (default empty string)
      *
      * @return int|float|array|bool|null|string posted data value if key found, or default
      */
-    public static function get_requested_value($key, $default = '')
+    public static function get_requested_value(string $key, float|array|bool|int|string|null $default = ''): float|array|bool|int|string|null
     {
-
         $value = $default;
 
         if (isset($_REQUEST[$key])) {
@@ -65,7 +61,7 @@ class WC_Delisend_Helper
      *
      * @return array
      */
-    public static function get_requested_post_data($post_data)
+    public static function get_requested_post_data($post_data): array
     {
         $args = array();
         parse_str($post_data, $args);
@@ -93,9 +89,8 @@ class WC_Delisend_Helper
      *
      * @return int
      */
-    public static function wc_notice_count($notice_type = '')
+    public static function wc_notice_count(string $notice_type = ''): int
     {
-
         if (function_exists('wc_notice_count')) {
             return wc_notice_count($notice_type);
         }
@@ -108,12 +103,11 @@ class WC_Delisend_Helper
      * Add and store a notice.
      * WC notice functions are not available in the admin
      *
-     * @param string $message     The text to display in the notice.
+     * @param string $message The text to display in the notice.
      * @param string $notice_type The singular name of the notice type - either error, success or notice. [optional]
      */
-    public static function wc_add_notice($message, $notice_type = 'success')
+    public static function wc_add_notice(string $message, string $notice_type = 'success'): void
     {
-
         if (function_exists('wc_add_notice')) {
             wc_add_notice($message, $notice_type);
         }
@@ -124,12 +118,11 @@ class WC_Delisend_Helper
      * Print a single notice immediately
      * WC notice functions are not available in the admin
      *
-     * @param string $message     The text to display in the notice.
+     * @param string $message The text to display in the notice.
      * @param string $notice_type The singular name of the notice type - either error, success or notice. [optional]
      */
-    public static function wc_print_notice($message, $notice_type = 'success')
+    public static function wc_print_notice(string $message, string $notice_type = 'success'): void
     {
-
         if (function_exists('wc_print_notice')) {
             wc_print_notice($message, $notice_type);
         }
@@ -142,9 +135,8 @@ class WC_Delisend_Helper
      * @return bool
      * @see \WooCommerce::is_rest_api_request()
      */
-    public static function is_rest_api_request()
+    public static function is_rest_api_request(): bool
     {
-
         if (is_callable('WC') && is_callable([WC(), 'is_rest_api_request'])) {
             return (bool)WC()->is_rest_api_request();
         }
@@ -154,7 +146,7 @@ class WC_Delisend_Helper
         }
 
         $rest_prefix = trailingslashit(rest_get_url_prefix());
-        $is_rest_api_request = false !== strpos($_SERVER['REQUEST_URI'], $rest_prefix);
+        $is_rest_api_request = str_contains($_SERVER['REQUEST_URI'], $rest_prefix);
 
         /* applies WooCommerce core filter */
         return (bool)apply_filters('woocommerce_is_rest_api_request', $is_rest_api_request);

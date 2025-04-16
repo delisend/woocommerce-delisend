@@ -17,7 +17,7 @@ class WC_Delisend_Definitions {
     const PLUGIN_ID = 'woocommerce_delisend';
 
     /** @var string The plugin name */
-    const PLUGIN_VERSION = '1.0.0';
+    const PLUGIN_VERSION = '1.2.0';
 
     /** @var string The slug used to check for updates. */
     const PLUGIN_SLUG_FOR_UPDATES = 'woocommerce-delisend';
@@ -32,13 +32,13 @@ class WC_Delisend_Definitions {
     const PLUGIN_NAME = 'Delisend customer assistant for WooCommerce';
 
     /** @var string Minimum WordPress version required by this plugin */
-    const MINIMUM_WP_VERSION = '5.6';
+    const MINIMUM_WP_VERSION = '6.7';
 
     /** @var string Minimum PHP version required by this plugin */
-    const MINIMUM_PHP_VERSION = '7.2.0';
+    const MINIMUM_PHP_VERSION = '8.0.0';
 
     /** @var string Minimum WooCommerce version required by this plugin. */
-    const MINIMUM_WC_VERSION = '3.5.0';
+    const MINIMUM_WC_VERSION = '9.7.0';
 
     /** @var string The plugin text domain */
     const TEXT_DOMAIN = 'woocommerce-delisend';

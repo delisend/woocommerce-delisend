@@ -20,8 +20,8 @@ class WC_Delisend_Utils {
      *
      * @return bool
      */
-    public static function isWoocommerceIntegration() {
-
+    public static function isWoocommerceIntegration(): bool
+    {
         if (class_exists( 'WooCommerce' )) {
             return true;
         }
@@ -40,7 +40,8 @@ class WC_Delisend_Utils {
      *
      * @return bool
      */
-    public static function is_environment_compatible() {
+    public static function is_environment_compatible(): bool
+    {
         return version_compare(PHP_VERSION, WC_Delisend_Definitions::MINIMUM_PHP_VERSION, '>=');
     }
 
@@ -51,7 +52,8 @@ class WC_Delisend_Utils {
      * @access public
      * @return string
      */
-    public static function getIntegrationName() {
+    public static function getIntegrationName(): string
+    {
         if ( self::isWoocommerceIntegration() ) {
             return 'WooCommerce';
         }
@@ -66,7 +68,8 @@ class WC_Delisend_Utils {
      *
      * @return bool
      */
-    public static function is_enhanced_admin_available() {
+    public static function is_enhanced_admin_available(): bool
+    {
         return self::is_wc_version_gte( '4.0' ) && function_exists( 'wc_admin_url' );
     }
 
@@ -76,7 +79,8 @@ class WC_Delisend_Utils {
     *
     * @return string|null Woocommerce version number or null if undetermined
     */
-    public static function get_wc_version() {
+    public static function get_wc_version(): ?string
+    {
         return defined( 'WC_VERSION' ) && WC_VERSION ? WC_VERSION : null;
     }
 
@@ -87,7 +91,8 @@ class WC_Delisend_Utils {
      * @param string $version semver
      * @return bool
      */
-    public static function is_wc_version( $version ) {
+    public static function is_wc_version(string $version ): bool
+    {
         $wc_version = self::get_wc_version();
         return $wc_version === $version || ( $wc_version && version_compare( $wc_version, $version, '=' ) );
     }
@@ -99,7 +104,8 @@ class WC_Delisend_Utils {
      * @param string $version version number to compare
      * @return bool
      */
-    public static function is_wc_version_gte( $version ) {
+    public static function is_wc_version_gte(string $version ): bool
+    {
         $wc_version = self::get_wc_version();
         return $wc_version && version_compare( $wc_version, $version, '>=' );
     }
@@ -111,7 +117,8 @@ class WC_Delisend_Utils {
      * @param null $plugin_id unused
      * @return string
      */
-    public function get_settings_url( $plugin_id = null ) {
+    public function get_settings_url( $plugin_id = null ): string
+    {
         return admin_url( 'admin.php?page=wc-delisend' );
     }
 
@@ -122,7 +129,8 @@ class WC_Delisend_Utils {
      * @param string $version version number to compare
      * @return bool
      */
-    public static function is_wc_version_lt( $version ) {
+    public static function is_wc_version_lt( $version ): bool
+    {
         $wc_version = self::get_wc_version();
         return $wc_version && version_compare( $wc_version, $version, '<' );
     }
@@ -133,7 +141,8 @@ class WC_Delisend_Utils {
      *
      * @return string
      */
-    public static function get_documentation_url() {
+    public static function get_documentation_url(): string
+    {
         return 'https://delisend.com/docs';
     }
 
@@ -143,7 +152,8 @@ class WC_Delisend_Utils {
      *
      * @return string
      */
-    public static function get_connect_url() {
+    public static function get_connect_url(): string
+    {
         return 'https://delisend.com/login';
     }
 
@@ -153,7 +163,8 @@ class WC_Delisend_Utils {
      *
      * @return string
      */
-    public static function get_support_url() {
+    public static function get_support_url(): string
+    {
         return 'https://delisend.com/support';
     }
 
@@ -163,7 +174,8 @@ class WC_Delisend_Utils {
      *
      * @return string
      */
-    public static function get_services_page_url() {
+    public static function get_services_page_url(): string
+    {
         return 'https://delisend.com/#pricing';
     }
 
@@ -173,8 +185,8 @@ class WC_Delisend_Utils {
      *
      * @return string
      */
-    public static function get_sales_page_url() {
-
+    public static function get_sales_page_url(): string
+    {
         $user_locale = get_user_locale();
 
         if ($user_locale === 'sk_SK') {
@@ -194,7 +206,8 @@ class WC_Delisend_Utils {
      *
      * @return string
      */
-    public static function get_plugin_url() {
+    public static function get_plugin_url(): string
+    {
 
         if ( null === self::$plugin_url ) {
             self::$plugin_url = dirname(untrailingslashit( plugins_url( '/', self::get_file() ) ),2);
@@ -209,7 +222,8 @@ class WC_Delisend_Utils {
      *
      * @return string
      */
-    protected static function get_file() {
+    protected static function get_file(): string
+    {
         return __FILE__;
     }
 
@@ -220,7 +234,8 @@ class WC_Delisend_Utils {
      *
      * @return string
      */
-    public static function get_woocommerce_uploads_path() {
+    public static function get_woocommerce_uploads_path(): string
+    {
         $upload_dir = wp_upload_dir();
         return $upload_dir['basedir'] . '/woocommerce_uploads';
     }
@@ -229,7 +244,8 @@ class WC_Delisend_Utils {
     /**
      * To be used when running clean up for uninstalls or store disconnection.
      */
-    public static function clean_database() {
+    public static function clean_database(): void
+    {
         global $wpdb;
 
         // delete custom tables data
@@ -247,7 +263,8 @@ class WC_Delisend_Utils {
     /**
      *
      */
-    public static function flush_database_tables() {
+    public static function flush_database_tables(): void
+    {
         try {
             global $wpdb;
             $wpdb->query("TRUNCATE `{$wpdb->prefix}delisend_rating_history`");
@@ -259,7 +276,8 @@ class WC_Delisend_Utils {
      * @param $domain
      * @return array|false|string|string[]
      */
-    public static function get_domain_name($domain) {
+    public static function get_domain_name($domain): array|bool|string
+    {
         $domain = strtolower($domain);
         $domain = str_replace(['http://', 'https://', 'www.'], '', $domain);
         if (str_contains($domain, '/')) {
@@ -279,7 +297,8 @@ class WC_Delisend_Utils {
      *
      * @return string plugin id with dashes in place of underscores
      */
-    public static function get_id_dasherized() {
+    public static function get_id_dasherized(): string
+    {
         return str_replace( '_', '-', WC_Delisend_Definitions::PLUGIN_ID );
     }
 }
@@ -293,7 +312,7 @@ if (!function_exists('str_contains')) {
      * @return bool
      */
     function str_contains(string $haystack, string $needle): bool {
-        return '' === $needle || false !== strpos($haystack, $needle);
+        return '' === $needle || str_contains($haystack, $needle);
     }
 }
 

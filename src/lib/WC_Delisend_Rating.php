@@ -23,14 +23,14 @@ if (!class_exists('WC_Delisend_Rating')) :
         protected static WC_Delisend_Rating $instance;
 
         /**
-         * @var false|mixed|string|null
+         * @var false|string|null
          */
-        protected mixed $dateFormat;
+        protected $dateFormat;
 
         /**
-         * @var false|mixed|string|null
+         * @var false|string|null
          */
-        protected mixed $timeFormat;
+        protected $timeFormat;
 
         /**
          * @var bool

@@ -2,12 +2,15 @@
 
 namespace Delisend\WC\Lib;
 
-if (!defined('ABSPATH')) { exit; }
+if (!defined('ABSPATH')) {
+    exit;
+}
 
-use Automattic\Jetpack\Constants;
-use JetBrains\PhpStorm\NoReturn;
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+use Automattic\WooCommerce\Internal\DependencyManagement\ContainerException;
 use \ReflectionClass;
 use \Exception;
+use WooCommerce;
 
 if (!class_exists('WC_Delisend_Plugin')) :
 
@@ -18,8 +21,8 @@ if (!class_exists('WC_Delisend_Plugin')) :
      */
     class WC_Delisend_Plugin
     {
-        /** @var WC_Delisend_Plugin singleton instance */
-        protected static $instance;
+        /** @var WC_Delisend_Plugin|null singleton instance */
+        protected static ?WC_Delisend_Plugin $instance = null;
 
         /** @var string plugin id */
         private string $id;
@@ -37,37 +40,37 @@ if (!class_exists('WC_Delisend_Plugin')) :
         protected string $plugin_directory = WC_Delisend_Definitions::TEXT_DOMAIN;
 
         /**  @var bool Indicates if the setup process of the plugin is running */
-        protected $running_setup = false;
+        protected bool $running_setup = false;
 
         /** @var array the admin notices to add */
-        protected $notices = [];
+        protected array $notices = [];
 
         /**  @var array This array will contain the paths used by the plugin */
-        protected $paths = [];
+        protected array $paths = [];
 
         /** @var array This array will contain the URLs used by the plugin */
-        protected $urls = [];
+        protected array $urls = [];
 
         /** @var WC_Delisend_Settings settings handler */
-        private $settings_handler;
+        private WC_Delisend_Settings $settings_handler;
 
         /** @var WC_Delisend_Connection connection handler */
-        private $connection_handler;
+        private WC_Delisend_Connection $connection_handler;
 
         /** @var WC_Delisend_Rating rating handler */
-        private $rating_handler;
+        private WC_Delisend_Rating $rating_handler;
 
         /** @var WC_Delisend_Order order handler */
-        private $order_handler;
+        private WC_Delisend_Order $order_handler;
 
         /** @var WC_Delisend_Api Delisend API handler */
-        private $api_handler;
+        private WC_Delisend_Api $api_handler;
 
         /** @var WC_Delisend_Message message handler */
-        private $message_handler;
+        private WC_Delisend_Message $message_handler;
 
         /** @var WC_Delisend_Notice the admin notice handler class */
-        private $notice_handler;
+        private WC_Delisend_Notice $notice_handler;
 
         /**
          * WC_Delisend_Plugin constructor.
@@ -75,7 +78,6 @@ if (!class_exists('WC_Delisend_Plugin')) :
         public function __construct()
         {
             $debug = get_option(WC_Delisend_Definitions::OPTION_ENABLE_DEBUG_MODE);
-
             if ($debug === 'yes') {
                 @ini_set('display_errors', 1);
             }
@@ -98,7 +100,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          * @return WC_Delisend_Plugin the plugin singleton instance
          * @see delisend_for_woocommerce()
          */
-        public static function instance()
+        public static function instance(): WC_Delisend_Plugin
         {
             if (null === self::$instance) {
                 self::$instance = new self();
@@ -111,7 +113,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * Builds the settings handler instance.
          */
-        protected function set_settings_handler()
+        protected function set_settings_handler(): void
         {
             $this->settings_handler = new WC_Delisend_Settings();
         }
@@ -120,7 +122,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * Builds the connection handler instance.
          */
-        protected function set_connection_handler()
+        protected function set_connection_handler(): void
         {
             $this->connection_handler = new WC_Delisend_Connection();
         }
@@ -129,15 +131,16 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * Builds the rating handler instance.
          */
-        protected function set_rating_handler()
+        protected function set_rating_handler(): void
         {
             $this->rating_handler = new WC_Delisend_Rating();
         }
 
+
         /**
          * Builds the rating handler instance.
          */
-        protected function set_api_handler()
+        protected function set_api_handler(): void
         {
             $this->api_handler = new WC_Delisend_Api();
         }
@@ -146,7 +149,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * Builds the order handler instance.
          */
-        protected function set_order_handler()
+        protected function set_order_handler(): void
         {
             $this->order_handler = new WC_Delisend_Order();
         }
@@ -155,15 +158,16 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * Builds the admin message handler instance.
          */
-        protected function set_message_handler()
+        protected function set_message_handler(): void
         {
             $this->message_handler = new WC_Delisend_Message($this->get_id());
         }
 
+
         /**
          * Builds the admin notice handler instance.
          */
-        protected function set_notice_handler()
+        protected function set_notice_handler(): void
         {
             $this->notice_handler = new WC_Delisend_Notice($this->get_id());
         }
@@ -216,6 +220,8 @@ if (!class_exists('WC_Delisend_Plugin')) :
          */
         protected function set_hooks(): void
         {
+
+
             add_action('init', array($this, 'plugin_load_textdomain'));
 
             // load admin handlers, before admin_init
@@ -232,7 +238,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
                 remove_action('shutdown', 'wp_ob_end_flush_all', 1);
 
                 // UI
-                add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
+                add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 2 );
 
                 if (WC_Delisend_Utils::isWoocommerceIntegration()) {
 
@@ -246,10 +252,11 @@ if (!class_exists('WC_Delisend_Plugin')) :
 
                     // Called after all plugins have loaded
                     add_action('plugins_loaded', array($this, 'plugins_loaded'));
-                    add_action('woocommerce_init', array($this, 'woocommerce_loaded'), 1);
 
-                    add_action( 'woocommerce_order_status_changed', array( $this, 'delisend_status_changed' ), 10 , 3 );
-                    add_action( 'woocommerce_order_details_after_order_table', array($this, 'delisend_details_after_order_table'), 20, 2);
+                    add_action('woocommerce_init', array($this, 'woocommerce_loaded'), 1);
+                    add_action('woocommerce_order_status_changed', array($this, 'delisend_status_changed'), 10, 3);
+                    add_action('woocommerce_order_details_after_order_table', array($this, 'delisend_details_after_order_table'), 20, 2);
+
                     add_action('wp_ajax_delisend_check_customer_rating', array($this, 'delisend_check_customer_rating'));
                     add_action('wp_ajax_delisend_create_customer_rating', array($this, 'delisend_create_customer_rating'));
                 }
@@ -259,7 +266,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
             add_filter('woocommerce_available_payment_gateways', array($this, 'delisend_woocommerce_available_payment_gateways'), 10, 1);
             add_action('woocommerce_before_checkout_form', array($this, 'delisend_woocommerce_before_checkout_form'), 10, 1);
             add_action('woocommerce_checkout_before_customer_details', array($this, 'delisend_display_payment_request_button_html'), 10, 1);
-            add_action('woocommerce_checkout_update_order_review', array($this, 'delisend_woocommerce_checkout_update_order_review'), 10, 1); //$_POST['post_data'] )
+            add_action('woocommerce_checkout_update_order_review', array($this, 'delisend_woocommerce_checkout_update_order_review'), 10, 1);
         }
 
 
@@ -268,7 +275,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return string plugin id
          */
-        public function get_id()
+        public function get_id(): string
         {
             return $this->id;
         }
@@ -279,7 +286,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return WC_Delisend_Settings
          */
-        public function get_settings_handler()
+        public function get_settings_handler(): WC_Delisend_Settings
         {
             return $this->settings_handler;
         }
@@ -290,7 +297,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return WC_Delisend_Connection
          */
-        public function get_connection_handler()
+        public function get_connection_handler(): WC_Delisend_Connection
         {
             return $this->connection_handler;
         }
@@ -301,7 +308,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return WC_Delisend_Api
          */
-        public function get_api_handler()
+        public function get_api_handler(): WC_Delisend_Api
         {
             return $this->api_handler;
         }
@@ -312,7 +319,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return WC_Delisend_Rating
          */
-        public function get_rating_handler()
+        public function get_rating_handler(): WC_Delisend_Rating
         {
             return $this->rating_handler;
         }
@@ -323,7 +330,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return WC_Delisend_Order
          */
-        public function get_order_handler()
+        public function get_order_handler(): WC_Delisend_Order
         {
             return $this->order_handler;
         }
@@ -334,7 +341,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return WC_Delisend_Message
          */
-        public function get_message_handler()
+        public function get_message_handler(): WC_Delisend_Message
         {
             return $this->message_handler;
         }
@@ -345,7 +352,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return WC_Delisend_Notice
          */
-        public function get_notice_handler()
+        public function get_notice_handler(): WC_Delisend_Notice
         {
             return $this->notice_handler;
         }
@@ -362,11 +369,11 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * Returns the full path corresponding to the specified key.
          *
-         * @param string The path key.
+         * @param string $key The path key.
          *
          * @return string
          */
-        public function path($key): string
+        public function path(string $key): string
         {
             return $this->paths[$key] ?? '';
         }
@@ -375,11 +382,11 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * Returns the URL corresponding to the specified key.
          *
-         * @param string The URL key.
+         * @param string $key The URL key.
          *
          * @return string
          */
-        public function url($key): string
+        public function url(string $key): string
         {
             return $this->urls[$key] ?? '';
         }
@@ -388,7 +395,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * @return void
          */
-        function plugin_load_textdomain()
+        function plugin_load_textdomain(): void
         {
             $locale = determine_locale();
             $locale = apply_filters('plugin_locale', $locale, WC_Delisend_Definitions::TEXT_DOMAIN);
@@ -404,7 +411,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return string
          */
-        public function plugin_dir()
+        public function plugin_dir(): string
         {
             if (empty($this->plugin_directory)) {
                 $reflector = new ReflectionClass($this);
@@ -416,14 +423,14 @@ if (!class_exists('WC_Delisend_Plugin')) :
 
 
         /**
-         * @param $path
-         * @param $plugin
+         * @param string $path
+         * @param string $plugin
          *
          * @return string
          */
-        public function plugins_url($path = '', $plugin = '' ): string
+        public function plugins_url(string $path = '', string $plugin = ''): string
         {
-            return plugins_url($this->plugin_dir().'/'.$path, $plugin );
+            return plugins_url($this->plugin_dir() . '/' . $path, $plugin);
         }
 
 
@@ -431,38 +438,48 @@ if (!class_exists('WC_Delisend_Plugin')) :
          * Adds meta boxes to the admin interface.
          *
          * @return void
+         * @throws ContainerException
          * @see add_meta_boxes().
          */
-        public function add_meta_boxes()
+        public function add_meta_boxes($wc_screen_id, $wc_order)
         {
+            if ( class_exists( CustomOrdersTableController::class ) && function_exists( 'wc_get_container' ) && wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
+                $screen_id = wc_get_page_screen_id( 'shop-order' );
+            } else {
+                $screen_id = 'shop_order';
+            }
+
+            if ( $wc_screen_id != $screen_id ) {
+                return;
+            }
+
             add_meta_box('wc_delisend_info_box',
                 __('Delisend information', self::$text_domain),
                 array($this, 'render_order_delisend_info_box'),
-                'shop_order',
+                $screen_id,
                 'side',
                 'default');
         }
 
 
         /**
-         * Renders the box with the VAT information associated to an order.
-         *
-         * @param int order_id The ID of the target order. If empty, the ID of the
-         * current post is taken.
+         * Renders the box with Delisend info.
          */
-        public function render_order_delisend_info_box($order_id = null)
+        public function render_order_delisend_info_box($order = null): void
         {
+            if (!empty($order)) {
+                $order_id = $order->get_id();
+            } else {
+                global $post;
+                $order_id = $post->ID;
+            }
+
             if (empty($order_id)) {
                 global $post;
                 $order_id = $post->ID;
             }
 
-            if(empty($order_id)) {
-                global $post;
-                $order_id = $post->ID;
-            }
-
-            $order = wc_get_order( $order_id );
+            $order = wc_get_order($order_id);
 
             include_once($this->path('views') . '/admin/order-delisend-info-box.php');
         }
@@ -485,7 +502,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * Performs operation when all plugins have been loaded.
          */
-        public function plugins_loaded()
+        public function plugins_loaded(): void
         {
             load_plugin_textdomain(static::$text_domain, false, $this->path('languages_rel') . '/');
         }
@@ -511,7 +528,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @internal
          */
-        public function admin_notices()
+        public function admin_notices(): void
         {
             foreach ((array)$this->notices as $notice_key => $notice) {
                 ?>
@@ -525,9 +542,9 @@ if (!class_exists('WC_Delisend_Plugin')) :
 
         /**
          * Checks the environment on loading WordPress, just in case the environment changes after activation.
-         * * @return void
+         * @return void
          */
-        public function check_environment()
+        public function check_environment(): void
         {
             if (!WC_Delisend_Utils::is_environment_compatible() && is_plugin_active(plugin_basename(__FILE__))) {
                 $this->deactivate_plugin();
@@ -570,10 +587,10 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * Returns global instance of WooCommerce.
          *
-         * @return object The global instance of WooCommerce.
+         * @return WooCommerce The global instance of WooCommerce.
          * @see WC()
          */
-        protected function wc()
+        protected function wc(): WooCommerce
         {
             return wc();
         }
@@ -589,7 +606,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
             $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? null;
             $bot_types = 'bot|crawl|slurp|spider';
 
-            $result = !empty($user_agent) ? preg_match("/$bot_types/", $user_agent) > 0 : false;
+            $result = !empty($user_agent) && preg_match("/$bot_types/", $user_agent) > 0;
             return apply_filters('wc_delisend_visitor_is_bot', $result);
         }
 
@@ -597,13 +614,14 @@ if (!class_exists('WC_Delisend_Plugin')) :
         /**
          * Adds an admin notice to be displayed.
          *
-         * @param string $slug    the slug for the notice
-         * @param string $class   the css class for the notice
+         * @param string $slug the slug for the notice
+         * @param string $class the css class for the notice
          * @param string $message the notice message
+         * @param bool $dismissible
          *
          * @internal
          */
-        private function add_admin_notice($slug, $class, $message, $dismissible = false)
+        private function add_admin_notice(string $slug, string $class, string $message, $dismissible = false): void
         {
             $this->notices[$slug] = [
                 'class' => $class,
@@ -630,12 +648,12 @@ if (!class_exists('WC_Delisend_Plugin')) :
          * @return bool
          * @since 1.0.0
          */
-        public function is_debug_mode_enabled()
+        public function is_debug_mode_enabled(): bool
         {
             /**
              * Filters whether debug mode is enabled.
              *
-             * @param bool $is_enabled                whether debug mode is enabled
+             * @param bool $is_enabled whether debug mode is enabled
              * @param WC_Delisend_Plugin $integration the integration instance
              *
              * @since 1.0.0
@@ -650,12 +668,12 @@ if (!class_exists('WC_Delisend_Plugin')) :
          * @return bool
          * @since 1.0.0
          */
-        public function is_automatic_check_enabled()
+        public function is_automatic_check_enabled(): bool
         {
             /**
              * Filters whether debug mode is enabled.
              *
-             * @param bool $is_enabled                whether debug mode is enabled
+             * @param bool $is_enabled whether debug mode is enabled
              * @param WC_Delisend_Plugin $integration the integration instance
              *
              * @since 1.0.0
@@ -695,14 +713,12 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return bool
          */
-        private function is_wc_compatible()
+        private function is_wc_compatible(): bool
         {
-
             if (!WC_Delisend_Definitions::MINIMUM_WC_VERSION) {
                 return true;
             }
-
-            return defined('WC_VERSION') && version_compare(Constants::get_constant('WC_VERSION'), WC_Delisend_Definitions::MINIMUM_WC_VERSION, '>=');
+            return class_exists( 'WooCommerce' ) && version_compare( \WC_VERSION, WC_Delisend_Definitions::MINIMUM_WC_VERSION, '>=' );
         }
 
 
@@ -711,7 +727,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @internal
          */
-        public function enqueue_assets()
+        public function enqueue_assets(): void
         {
             $admin_scripts_params = array(
                 'ajax_action' => $this->ajax_action(),
@@ -742,7 +758,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
         }
 
 
-        public function delisend_status_changed( $order_id , $old_order_status = '' , $new_order_status = '')
+        public function delisend_status_changed($order_id, $old_order_status = '', $new_order_status = '')
         {
         }
 
@@ -758,7 +774,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return mixed
          */
-        public function delisend_woocommerce_available_payment_gateways($available_gateways)
+        public function delisend_woocommerce_available_payment_gateways($available_gateways): mixed
         {
             if (WC()->customer !== null) {
                 $billing_first_name = WC()->customer->get_billing_first_name();
@@ -792,7 +808,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          * @return mixed
          * @throws Exception
          */
-        public function delisend_woocommerce_available_shipping_methods($available_methods, $package)
+        public function delisend_woocommerce_available_shipping_methods($available_methods, $package): mixed
         {
             // it is only updated after changing the data for Billing data on the checkout page
             if (is_checkout()) {
@@ -820,7 +836,6 @@ if (!class_exists('WC_Delisend_Plugin')) :
             }
 
             return $available_methods;
-
         }
 
 
@@ -830,14 +845,16 @@ if (!class_exists('WC_Delisend_Plugin')) :
          * @param $rates
          * @param $package
          *
-         * @return array|void
+         * @return array
          */
-        function available_shipping_methods($rates, $package = null)
+        function available_shipping_methods($rates, $package = null): array
         {
+            $rates = array();
+
             if (!isset(WC()->cart) || WC()->cart->is_empty()) {
                 //return $rates;
             }
-            //return $rates;
+            return $rates;
         }
 
 
@@ -852,7 +869,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return mixed
          */
-        public function delisend_woocommerce_before_checkout_form($available_gateways)
+        public function delisend_woocommerce_before_checkout_form($available_gateways): mixed
         {
             return $available_gateways;
         }
@@ -863,7 +880,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return mixed
          */
-        public function delisend_display_payment_request_button_html($available_gateways)
+        public function delisend_display_payment_request_button_html($available_gateways): mixed
         {
             return $available_gateways;
         }
@@ -874,7 +891,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return void
          */
-        public function localize_admin_scripts($hook_suffix)
+        public function localize_admin_scripts($hook_suffix): void
         {
             // Prepare parameters for common admin scripts
             $admin_scripts_params = array(
@@ -988,7 +1005,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return string
          */
-        protected function ajax_nonce_id()
+        protected function ajax_nonce_id(): string
         {
             return WC_Delisend_Definitions::PLUGIN_SLUG . '-nonce';
         }
@@ -999,7 +1016,7 @@ if (!class_exists('WC_Delisend_Plugin')) :
          *
          * @return string
          */
-        protected function ajax_action()
+        protected function ajax_action(): string
         {
             return WC_Delisend_Definitions::AJAX_ACTION;
         }

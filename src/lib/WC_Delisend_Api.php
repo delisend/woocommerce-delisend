@@ -16,15 +16,13 @@ if (!class_exists('WC_Delisend_Api')) :
     {
         /**
          * Core singleton class
-         *
-         * @var self
          */
-        private static $_instance;
+        private static ?WC_Delisend_Api $_instance = null;
 
         /**
-         * @var Configuration
+         * @var Configuration|null
          */
-        private Configuration $config;
+        private ?Configuration $config = null;
 
         /**
          * Initializes this class

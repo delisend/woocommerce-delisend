@@ -7,8 +7,10 @@ if (!defined('ABSPATH')) {
 }
 
 use Delisend\WC\Lib\WC_Delisend_Definitions;
+use Delisend\WC\Lib\WC_Delisend_Helper;
 use Delisend\WC\Lib\WC_Delisend_Install;
 use Delisend\WC\Lib\WC_Delisend_Plugin;
+use Delisend\WC\Lib\WC_Delisend_Settings;
 use Delisend\WC\Lib\WC_Delisend_Utils;
 
 
@@ -21,12 +23,13 @@ if (!class_exists('WC_Delisend_Loader')) :
      */
     final class WC_Delisend_Loader
     {
-
         /** @var WC_Delisend_Loader */
         private static $instance;
 
         /** @var WC_Delisend_Plugin */
         public $delisend;
+        private $running_setup;
+        private array $notices;
 
         /**
          * WC_Delisend_Loader constructor.
@@ -51,7 +54,7 @@ if (!class_exists('WC_Delisend_Loader')) :
          *
          * @return WC_Delisend_Loader
          */
-        public static function instance()
+        public static function instance(): WC_Delisend_Loader
         {
             if (null === self::$instance) {
                 self::$instance = new self();
@@ -84,7 +87,7 @@ if (!class_exists('WC_Delisend_Loader')) :
         {
             global $wp_version;
 
-            // kontrola verzie wordpressu
+            // WordPress version check
             if (version_compare($wp_version, WC_Delisend_Definitions::MINIMUM_WP_VERSION, "<")) {
                 deactivate_plugins(basename(__FILE__)); // Deactivate our plugin
                 wp_die("This plugin requires WordPress version " . WC_Delisend_Definitions::MINIMUM_WP_VERSION . " or higher.");
@@ -107,9 +110,9 @@ if (!class_exists('WC_Delisend_Loader')) :
          *
          * @internal
          */
-        public function admin_notices()
+        public function admin_notices(): void
         {
-            foreach ((array)$this->notices as $notice_key => $notice) {
+            foreach ($this->notices as $notice) {
                 ?>
                 <div class="<?php echo esc_attr($notice['class']); ?>">
                     <p><?php echo wp_kses($notice['message'], array('a' => array('href' => array()))); ?></p>
@@ -177,12 +180,12 @@ if (!class_exists('WC_Delisend_Loader')) :
         /**
          * Returns the full set of dismissed notices for the user identified by $user_id, for this plugin
          *
-         * @param int $user_id       optional user identifier, defaults to current user
+         * @param int|null $user_id       optional user identifier, defaults to current user
          * @param string $message_id the message identifier
          *
          * @return array of message id to dismissed status (true or false)
          */
-        public function get_dismissed_notices($message_id, $user_id = null): array
+        public function get_dismissed_notices(string $message_id, ?int $user_id = null): array
         {
             if (is_null($user_id)) {
                 $user_id = get_current_user_id();
@@ -199,33 +202,20 @@ if (!class_exists('WC_Delisend_Loader')) :
 
 
         /**
-         *
-         */
-        public function woocommerce_loaded()
-        {
-            if (!$this->running_setup && current_user_can('manage_woocommerce')) {
-                if (is_admin()) {
-
-                }
-            }
-        }
-
-
-        /**
          * Determines if viewing the plugin settings in the admin.
          *
          * @return bool
          */
-        public function is_plugin_settings()
+        public function is_plugin_settings(): bool
         {
-            return is_admin() && \Delisend\WC\Lib\WC_Delisend_Settings::PAGE_ID === \Delisend\WC\Lib\WC_Delisend_Helper::get_requested_value('page');
+            return is_admin() && WC_Delisend_Settings::PAGE_ID === WC_Delisend_Helper::get_requested_value('page');
         }
 
 
         /**
          * Method for internal testing
          */
-        public function delisend_testing()
+        public function delisend_testing(): void
         {
             WC_Delisend_Install::instance();
         }
@@ -255,7 +245,7 @@ if (!class_exists('WC_Delisend_Loader')) :
          *
          * @internal
          */
-        private function add_admin_notice($slug, $class, $message, $dismissible = false)
+        private function add_admin_notice(string $slug, string $class, string $message, bool $dismissible = false): void
         {
             $this->notices[$slug] = [
                 'class' => $class,

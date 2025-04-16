@@ -15,7 +15,6 @@ if (!class_exists('WC_Delisend_Settings')) :
      */
     class WC_Delisend_Settings
     {
-
         /**
          * @var string The key to identify plugin settings amongst WP options.
          */
@@ -29,19 +28,19 @@ if (!class_exists('WC_Delisend_Settings')) :
         /**
          * @var Abstract_Settings_Screen[]
          */
-        private $screens;
+        private array $screens;
 
         /**
          * @var string The plugin version
          */
-        public static $version = WC_Delisend_Definitions::PLUGIN_VERSION;
+        public static string $version = WC_Delisend_Definitions::PLUGIN_VERSION;
 
         /**
          * Whether the new Woo nav should be used.
          *
          * @var bool
          */
-        public $use_woo_nav = false;
+        public bool $use_woo_nav = false;
 
 
         /**
@@ -61,9 +60,8 @@ if (!class_exists('WC_Delisend_Settings')) :
         /**
          * Adds the Delisend menu item.
          */
-        public function add_menu_item()
+        public function add_menu_item(): void
         {
-
             $root_menu_item = 'woocommerce';
 
             add_submenu_page(
@@ -85,9 +83,8 @@ if (!class_exists('WC_Delisend_Settings')) :
          *
          * @internal
          */
-        public function render()
+        public function render(): void
         {
-
             $benefits = array(
                 //__('Create an ad in a few steps', WC_Delisend_Definitions::TEXT_DOMAIN),
                 //__('Use built-in best practices for online sales', WC_Delisend_Definitions::TEXT_DOMAIN),
@@ -142,9 +139,8 @@ if (!class_exists('WC_Delisend_Settings')) :
          *
          * @return void
          */
-        public function save()
+        public function save(): void
         {
-
             if (!is_admin() || WC_Delisend_Helper::get_requested_value('page') !== self::PAGE_ID) {
                 return;
             }
@@ -183,11 +179,10 @@ if (!class_exists('WC_Delisend_Settings')) :
          * Gets a settings screen object based on ID.
          *
          * @param string $screen_id desired screen ID
-         * @return \Delisend\WC\Lib\Screens\Abstract_Settings_Screen|null
+         * @return Abstract_Settings_Screen|null
          */
-        public function get_screen($screen_id)
+        public function get_screen(string $screen_id): ?Abstract_Settings_Screen
         {
-
             $screens = $this->get_screens();
 
             return !empty($screens[$screen_id]) && $screens[$screen_id] instanceof Abstract_Settings_Screen ? $screens[$screen_id] : null;
@@ -199,7 +194,7 @@ if (!class_exists('WC_Delisend_Settings')) :
          *
          * @return Abstract_Settings_Screen[]
          */
-        public function get_screens()
+        public function get_screens(): array
         {
 
             /**
@@ -210,14 +205,12 @@ if (!class_exists('WC_Delisend_Settings')) :
             $screens = (array)apply_filters('wc_delisend_admin_settings_screens', $this->screens, $this);
 
             // ensure no bogus values are added via filter
-            $screens = array_filter(
+            return array_filter(
                 $screens,
                 function ($value) {
                     return $value instanceof Abstract_Settings_Screen;
                 }
             );
-
-            return $screens;
         }
 
 
@@ -226,7 +219,7 @@ if (!class_exists('WC_Delisend_Settings')) :
          *
          * @return array
          */
-        public function get_tabs()
+        public function get_tabs(): array
         {
 
             $tabs = array();
@@ -249,10 +242,10 @@ if (!class_exists('WC_Delisend_Settings')) :
          *
          * @return string
          */
-        public function page_title()
+        public function page_title(): string
         {
             return __('Delisend - Settings', WC_Delisend_Definitions::TEXT_DOMAIN) .
-                sprintf('&nbsp;(v. %s)', WC_Delisend_Definitions::PLUGIN_VERSION);
+                sprintf('&nbsp;(v.%s)', WC_Delisend_Definitions::PLUGIN_VERSION);
         }
 
 
@@ -261,7 +254,7 @@ if (!class_exists('WC_Delisend_Settings')) :
          *
          * @return string
          */
-        public function page_description()
+        public function page_description(): string
         {
             // @TODO Restore link to documentation
             return __('In this page you can configure the settings for the Delisend plugin.',
@@ -274,7 +267,7 @@ if (!class_exists('WC_Delisend_Settings')) :
          *
          * @return void
          */
-        private function register_woo_nav_menu_items()
+        private function register_woo_nav_menu_items(): void
         {
 
             if (!$this->use_woo_nav) {

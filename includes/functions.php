@@ -1,6 +1,8 @@
 <?php
 
-if (!defined('ABSPATH')) { exit; }
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 /**
  * Function include all files in folder
@@ -17,25 +19,11 @@ if (!function_exists('fn_delisend_get_zones')) {
      * @param string $context Getting shipping methods for what context. Valid values, admin, json.
      * @return array Array of arrays.
      * @throws Exception
-     * @since 1.0.0
      */
-    function fn_delisend_get_zones(string $context = 'admin')
+    function fn_delisend_get_zones(string $context = 'admin'): array
     {
-        $data_store = WC_Data_Store::load('shipping-zone');
-        $raw_zones = $data_store->get_zones();
-        $zones = array();
-
-        foreach ($raw_zones as $raw_zone) {
-            $zone = new WC_Shipping_Zone($raw_zone);
-            $zones[$zone->get_id()] = $zone->get_data();
-            $zones[$zone->get_id()]['zone_id'] = $zone->get_id();
-            $zones[$zone->get_id()]['formatted_zone_location'] = $zone->get_formatted_location();
-            $zones[$zone->get_id()]['shipping_methods'] = $zone->get_shipping_methods(false, $context);
-        }
-
-        return $zones;
+        return WC_Shipping_Zones::get_zones();
     }
-
 }
 
 if (!function_exists('fn_delisend_get_zone_by')) {
@@ -47,33 +35,11 @@ if (!function_exists('fn_delisend_get_zone_by')) {
      * @param int $id ID.
      * @return WC_Shipping_Zone|bool
      * @throws Exception
-     * @since 1.0.0
      */
-    function fn_delisend_get_zone_by(string $by = 'zone_id', int $id = 0)
+    function fn_delisend_get_zone_by(string $by = 'zone_id', int $id = 0): int|null
     {
-        $zone_id = false;
-
-        switch ($by) {
-            case 'zone_id':
-                $zone_id = $id;
-                break;
-            case 'instance_id':
-                $data_store = WC_Data_Store::load('shipping-zone');
-                $zone_id = $data_store->get_zone_id_by_instance_id($id);
-                break;
-        }
-
-        if (false !== $zone_id) {
-            try {
-                return new WC_Shipping_Zone($zone_id);
-            } catch (Exception $e) {
-                return false;
-            }
-        }
-
-        return false;
+        return WC_Shipping_Zones::get_zone_by($by, $id);
     }
-
 }
 
 if (!function_exists('fn_delisend_get_ip_address')) {
@@ -83,14 +49,12 @@ if (!function_exists('fn_delisend_get_ip_address')) {
      *
      * @return string|null
      * @throws Exception
-     * @since 1.0.0
      */
-    function fn_delisend_get_ip_address()
+    function fn_delisend_get_ip_address(): ?string
     {
         $ip_address = WC_Geolocation::get_ip_address();
-        return (! empty( $ip_address ) ? $ip_address : null );
+        return (!empty($ip_address) ? $ip_address : null);
     }
-
 }
 
 if (!function_exists('fn_delisend_customize_hazard_rate_range')) {
@@ -107,18 +71,15 @@ if (!function_exists('fn_delisend_customize_hazard_rate_range')) {
          * @param array $attrs {
          *     The attributes.
          *
-         *     @type int $min  Minimum value.
-         *     @type int $max  Maximum value.
-         *     @type int $step Interval between numbers.
+         * @type int $min Minimum value.
+         * @type int $max Maximum value.
+         * @type int $step Interval between numbers.
          * }
          */
-        return apply_filters(
-            'delisend_customize_hazard_rate_range',
-            [
-                'min'  => 0,
-                'max'  => 90,
-                'step' => 5,
-            ]
-        );
+        return apply_filters('delisend_customize_hazard_rate_range', [
+            'min' => 0,
+            'max' => 90,
+            'step' => 5,
+        ]);
     }
 }
